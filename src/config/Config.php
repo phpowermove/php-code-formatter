@@ -39,4 +39,28 @@ class Config {
 	public function getConfig() {
 		return $this->config;
 	}
+	
+	public function getIndentation($key) {
+		if (isset($this->config['indentation'][$key])) {
+			return $this->config['indentation'][$key];
+		}
+	}
+	
+	public function getBraces($key) {
+		if (isset($this->config['braces'][$key])) {
+			return $this->config['braces'][$key];
+		}
+	}
+	
+	public function getWhitespace($key) {
+		if (isset($this->config['whitespace'][$key])) {
+			return $this->config['whitespace'][$key];
+		}
+	}
+	
+	public function getBlanks($key) {
+		if (isset($this->config['blanks'][$key])) {
+			return $this->config['blanks'][$key];
+		}
+	}
 }

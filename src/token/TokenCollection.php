@@ -25,7 +25,7 @@ class TokenCollection implements \Iterator {
 		return array_search($token, $this->collection);
 	}
 	
-	public function next($offset) {
+	public function nextToken($offset) {
 		$size = count($this->collection);
 		do {
 			$offset++;
@@ -35,7 +35,7 @@ class TokenCollection implements \Iterator {
 		return [$offset, $token];
 	}
 	
-	public function previous($offset) {
+	public function prevToken($offset) {
 		do {
 			$offset--;
 			$token = $this->collection[$offset];

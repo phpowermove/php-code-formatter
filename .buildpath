@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <buildpath>
-	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
+	<buildpathentry kind="src" path="vendor/phpunit/php-file-iterator/File"/>
 	<buildpathentry kind="src" path="tests"/>
+	<buildpathentry kind="src" path="vendor/phpunit/phpunit/src"/>
+	<buildpathentry kind="src" path="vendor/phpunit/php-timer/PHP"/>
+	<buildpathentry kind="src" path="vendor/phpunit/php-token-stream/PHP"/>
+	<buildpathentry kind="src" path="vendor/symfony/config"/>
 	<buildpathentry kind="src" path="src"/>
+	<buildpathentry kind="src" path="vendor/sebastian/exporter/src"/>
+	<buildpathentry kind="src" path="vendor/sebastian/diff/src"/>
+	<buildpathentry kind="src" path="vendor/symfony/yaml"/>
+	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
+	<buildpathentry kind="src" path="vendor/sebastian/comparator/src"/>
+	<buildpathentry kind="src" path="vendor/symfony/filesystem"/>
+	<buildpathentry kind="src" path="vendor/phpunit/php-code-coverage/src"/>
+	<buildpathentry kind="src" path="vendor/sebastian/environment/src"/>
+	<buildpathentry kind="src" path="vendor/phpunit/php-text-template/Text"/>
+	<buildpathentry kind="src" path="vendor/sebastian/version/src"/>
+	<buildpathentry kind="src" path="vendor/composer"/>
+	<buildpathentry kind="src" path="vendor/phpunit/phpunit-mock-objects/src"/>
 </buildpath>
