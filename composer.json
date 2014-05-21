@@ -1,0 +1,21 @@
+{
+	"keywords" : [
+		"php",
+		"formatter",
+		"beautifier"
+	],
+	"autoload" : {
+		"psr-4" : {
+			"gossi\\formatter\\" : "src"
+		}
+	},
+	"name" : "gossi/php-code-formatter",
+	"type" : "library",
+	"description" : "a code formatter for php code",
+	"license" : "MIT",
+	"require" : {
+		"php" : ">=5.4",
+		"symfony/config" : "~2",
+		"symfony/yaml" : "~2"
+	}
+}

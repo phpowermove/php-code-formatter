@@ -1,0 +1,203 @@
+formatter:
+  indentation:
+    # policy
+    character: tab
+    size: 1
+
+    # declarations
+    struct: true
+    function: true
+    blocks: true
+    switch: true
+    case: true
+    break: true
+    empty_lines: false
+
+  braces:
+    struct: same
+    function: same
+    blocks: same
+
+  whitespace:
+
+    # global
+    before_curly: true
+
+    before_open: false
+    after_open: false
+    before_close: false
+
+    before_comma: false
+    after_comma: true
+    before_semicolon: false
+    after_semicolon: true
+
+    before_arrow: false
+    after_arrow: false
+    before_doublecolon: false
+    after_doublecolon: false
+
+    before_binary: true
+    after_binary: true
+    before_unary: true
+    after_unary: false
+    before_prefix: false
+    after_prefix: false
+    before_postfix: false
+    after_postfix: true
+
+    before_questionmark: true
+    after_questionmark: true
+    before_colon: true
+    after_colon: true
+
+#    # declarations
+#    struct:
+#      before_curly: true
+#      before_comma: false
+#      after_comma: true
+#
+#    properties:
+#      # multi properties
+#      before_comma: false
+#      after_comma: true
+#
+#    constants:
+#      # multi constants
+#      before_comma: false
+#      after_comma: true
+#
+#    function:
+#      before_curly: true
+#      before_open: false
+#      after_open: false
+#      before_close: false
+#      before_comma: false
+#      after_comma: true
+#
+#    # control statements
+#    blocks:
+#      before_curly: true
+#      after_curly: true
+#
+#    ifelse:
+#      before_open: false
+#      after_open: false
+#      before_close: false
+#
+#    for:
+#      before_open: false
+#      after_open: false
+#      before_close: false
+#      before_comma: false
+#      after_comma: true
+#      before_semicolon: false
+#      after_semicolon: true
+#
+#    foreach:
+#      before_open: false
+#      after_open: false
+#      before_close: false
+#      before_arrow: true
+#      after_arrow: true
+#
+#    switch:
+#      before_open: false
+#      after_open: false
+#      before_close: false
+#      before_colon: false
+#
+#    while:
+#      before_open: false
+#      after_open: false
+#      before_close: false
+#
+#    catch:
+#      before_open: false
+#      after_open: false
+#      before_close: false
+#
+#    # multiple static
+#    static:
+#      before_comma: false
+#      after_comma: true
+#
+#    global:
+#      before_comma: false
+#      after_comma: true
+#
+#    echo:
+#      before_comma: false
+#      after_comma: true
+#
+#    yield:
+#      before_arrow: true
+#      after_arrow: true
+#
+#    # expressions
+#    field_access:
+#      before_arrow: false
+#      after_arrow: false
+#      before_doublecolon: false
+#      after_doublecolon: false
+#
+#    method_invocation:
+#      before_open: false
+#      after_open: false
+#      before_close: false
+#      before_comma: false
+#      after_comma: true
+#      before_arrow: false
+#      after_arrow: false
+#      before_doublecolon: false
+#      after_doublecolon: false
+#
+#    assignments:
+#      before_assignment: false
+#      after_assignment: true
+#
+#    operators:
+#      before_binary: true
+#      after_binary: true
+#      before_unary: true
+#      after_unary: false
+#      before_prefix: false
+#      after_prefix: false
+#      before_postfix: false
+#      after_postfix: true
+#
+#    type_casts:
+#      before_open: false
+#      after_open: false
+#      before_close: false
+#
+#    conditionals:
+#      before_questionmark: true
+#      after_questionmark: true
+#      before_colon: true
+#      after_colon: true
+#
+#    parens:
+#      before_open: false
+#      after_open: false
+
+    # arrays
+
+  blanks:
+
+    # namespace
+    before_namespace: 0
+    after_namespace: 1
+    after_use: 1
+
+    # class
+    before_struct: 1
+    before_traits: 1
+    before_constant: 1
+    before_properties: 1
+    before_function: 1
+    beginning_function: 0
+    end_function: 0
+    end_struct: 1
+
+    end_file: 1
