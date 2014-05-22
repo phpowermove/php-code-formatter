@@ -9,7 +9,7 @@ class Token {
 	public $type;
 	public $contents;
 	
-	public function __construct($token) {
+	public function __construct($token = null) {
 		if (is_array($token)) {
 			$this->type = $token[0];
 			$this->contents = $token[1];

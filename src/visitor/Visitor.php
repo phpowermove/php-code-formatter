@@ -12,6 +12,16 @@ class Visitor {
 	
 	const LEXICAL_BLOCK = 'block';
 	const LEXICAL_CALL = 'call';
+	const LEXICAL_GROUP = 'group';
+	
+	private static $BLOCK_CONTEXT_MAPPING = [
+		T_IF => 'ifelse',
+		T_ELSEIF => 'ifelse',
+		T_WHILE => 'while',
+		T_FOREACH => 'foreach',
+		T_FOR => 'for',
+		T_CATCH => 'catch'
+	];
 	
 	private $tokens;
 	private $config;
@@ -19,7 +29,9 @@ class Visitor {
 	
 	// contexts
 	private $structural = [];
-	private $lexical = [];
+	private $parens = [];
+	private $parensReference = [];
+	private $line;
 	
 	// context helpers
 	private $structuralDetected;
@@ -37,7 +49,8 @@ class Visitor {
 	
 	public function visit(Token $token) {
 // 		$i = $this->tokens->indexOf($token);
-		$lexical = $this->peekLexical();
+		$parens = $this->peekParens();
+		$parensReference = $this->peekParensReference();
 		$structural = $this->peekStructural();
 		$nextToken = $this->nextToken($token);
 		$prevToken = $this->prevToken($token);
@@ -56,23 +69,36 @@ class Visitor {
 			$this->structural[] = $this->structuralDetected;
 			$structural = $this->structuralDetected;
 		}
-		
+
 		// popping structural context
 		if ($token->contents == '}') {
 			$structural = array_pop($this->structural);
 		}
 		
-		// lexical context
+		// parens context
 		if ($token->contents == '(') {
-			if ($prevToken && (in_array($prevToken->type, Tokenizer::$BLOCKS)
-					|| in_array($prevToken->type, Tokenizer::$OPERATORS))) {
-				$lexical = self::LEXICAL_BLOCK;
+			if (in_array($prevToken->type, Tokenizer::$BLOCKS)
+					|| in_array($prevToken->type, Tokenizer::$OPERATORS)) {
+				$parens = self::LEXICAL_BLOCK;
+				$parensReference = $prevToken;
+			} else if ($this->isFunctionInvocation($token)) {
+				$parens = self::LEXICAL_CALL;
+				$parensReference = $prevToken;
 			} else {
-				$lexical = self::LEXICAL_CALL;
+				$parens = self::LEXICAL_GROUP;
+				$parensReference = new Token();
 			}
-			$this->lexical[] = $lexical;
+
+			$this->parens[] = $parens;
+			$this->parensReference[] = $parensReference;
 		} else if ($token->contents == ')') {
-			$lexical = array_pop($this->lexical);
+			$parens = array_pop($this->parens);
+			$parensReference = array_pop($this->parensReference);
+		}
+		
+		// line context
+		if (in_array($token->contents, Tokenizer::$LINE_CONTEXT)) {
+			$this->line = $token->contents;
 		}
 		
 		// whitespace, newlines and indentation
@@ -84,12 +110,33 @@ class Visitor {
 			return;
 		}
 
-		// operators and assignments
-		if (in_array($token->contents, Tokenizer::$ASSIGNMENTS)
-				|| in_array($token->contents, Tokenizer::$OPERATORS)) {
-			$this->whitespaceBeforeAfter($token, 'binary');
+		// assignments
+		if (in_array($token->contents, Tokenizer::$ASSIGNMENTS)) {
+			$this->whitespaceBeforeAfter($token, 'assignment', 'assignments');
 			return;
 		}
+		
+		// operators
+		if (in_array($token->contents, Tokenizer::$OPERATORS)) {
+			$this->whitespaceBeforeAfter($token, 'binary', 'operators');
+			return;
+		}
+
+		// prefix and postfix operators
+		if ($token->type == T_INC || $token->type == T_DEC) {
+			// pre
+			if ($nextToken->type == T_VAR) {
+				$this->whitespaceBeforeAfter($token, 'prefix', 'operators');
+			}
+				
+			// post
+			else if ($prevToken->type == T_VAR) {
+				$this->whitespaceBeforeAfter($token, 'postfix', 'operators');
+			}
+		}
+		
+		// unary operator
+		
 
 		// syntax
 		$beforeAfter = [
@@ -105,11 +152,44 @@ class Visitor {
 		];
 		
 		foreach ($beforeAfter as $contents => $key) {
-			if ($token->contents == $contents
-					&& ($token->contents == ';' ? $lexical == self::LEXICAL_BLOCK : true)
-				) {
-				$this->whitespaceBeforeAfter($token, $key);
+			if ($token->contents == $contents) {
 				
+				// continue when semicolon and it is not tangled to a block statement
+				if ($token->contents == ';' && $parens != self::LEXICAL_BLOCK) {
+					continue;
+				}
+				
+				// check context
+				$context = 'default';
+				
+				// first check the context of the current line
+				if (!empty($this->line)) {
+					$context = $this->line;
+				} 
+				
+				// is it a parenthesis group
+				else if ($parens == self::LEXICAL_GROUP) {
+					$context = 'grouping';
+				}
+				
+				// a function call
+				else if ($parens == self::LEXICAL_CALL) {
+					$context = 'function_invocation';
+				}
+
+				// field access
+				else if ($contents === '->' || $contents === '::') {
+					$context = 'field_access';
+				}
+
+				// a given block statement
+				else if ($parens == self::LEXICAL_BLOCK
+						&& isset(self::$BLOCK_CONTEXT_MAPPING[$parensReference->type])) {
+					$context = self::$BLOCK_CONTEXT_MAPPING[$parensReference->type];
+				}
+
+				$this->whitespaceBeforeAfter($token, $key, $context);
+
 				if ($contents != ';') {
 					return;
 				}
@@ -120,17 +200,17 @@ class Visitor {
 		if ($token->contents == '{') {
 			
 			// curly braces in strucs
-			if ($structural && in_array($structural->type, Tokenizer::$STRUCTS)) {
+			if (in_array($structural->type, Tokenizer::$STRUCTS)) {
 				$this->newlineOrSpace($this->config->getBraces('struct') == 'next');
 			}
 			
 			// curly braces in functions
-			else if ($structural && $structural->type == T_FUNCTION) {
+			else if ($structural->type == T_FUNCTION) {
 				$this->newlineOrSpace($this->config->getBraces('function') == 'next');
 			}
 			
 			// curly braces in blocks
-			if ($structural && in_array($structural->type, Tokenizer::$BLOCKS)) {
+			if (in_array($structural->type, Tokenizer::$BLOCKS)) {
 				$this->newlineOrSpace($this->config->getBraces('blocks') == 'next');
 			}
 			
@@ -146,13 +226,13 @@ class Visitor {
 			$this->writer->write('}');
 			
 			// check new line before T_ELSE and T_ELSEIF
-			if ($structural && in_array($structural->type, [T_IF, T_ELSEIF])
-					&& $nextToken && in_array($nextToken->type, [T_ELSE, T_ELSEIF])) {
+			if (in_array($structural->type, [T_IF, T_ELSEIF])
+					&& in_array($nextToken->type, [T_ELSE, T_ELSEIF])) {
 				$this->newlineOrSpace($this->config->getNewlines('elseif_else'));
 			}
 			
 			// check new line before T_CATCH
-			else if ($nextToken && $nextToken->type == T_CATCH) {
+			else if ($nextToken->type == T_CATCH) {
 				$this->newlineOrSpace($this->config->getNewlines('catch'));
 			}
 			
@@ -162,8 +242,8 @@ class Visitor {
 			}
 			
 			// check new line before T_CATCH
-			else if ($structural && $structural->type == T_DO 
-					&& $nextToken && $nextToken->type == T_WHILE) {
+			else if ($structural->type == T_DO 
+					&& $nextToken->type == T_WHILE) {
 				$this->newlineOrSpace($this->config->getNewlines('do_while'));
 			}
 			
@@ -174,12 +254,18 @@ class Visitor {
 			
 			return;
 		}
+
+		// blanks
+		// ------------------------------------------------
 		
 		// default behavior
 		// ------------------------------------------------
 		
 		
-		if ($token->contents == ';' && $lexical != self::LEXICAL_BLOCK) {
+		if ($token->contents == ';' && $parens != self::LEXICAL_BLOCK) {
+			
+			// reset line context
+			$this->line = null;
 			$this->writer->writeln($token->contents);
 		} else if ($token->contents != ';') {
 			$this->writer->write($token->contents);
@@ -194,14 +280,14 @@ class Visitor {
 		}
 	}
 
-	private function whitespaceBeforeAfter(Token $token, $key) {
-		if ($this->config->getWhitespace('before_' . $key)) {
+	private function whitespaceBeforeAfter(Token $token, $key, $context = 'default') {
+		if ($this->config->getWhitespace('before_' . $key, $context)) {
 			$this->writer->write(' ');
 		}
 	
 		$this->writer->write($token->contents);
 		
-		if ($this->config->getWhitespace('after_' . $key)) {
+		if ($this->config->getWhitespace('after_' . $key, $context)) {
 			$this->writer->write(' ');
 		}
 	}
@@ -211,23 +297,46 @@ class Visitor {
 		if ($size > 0) {
 			return $this->structural[$size - 1];
 		}
+		return new Token();
 	}
 	
-	private function peekLexical() {
-		$size = count($this->lexical);
+	private function peekParens() {
+		$size = count($this->parens);
 		if ($size > 0) {
-			return $this->lexical[$size - 1];
+			return $this->parens[$size - 1];
 		}
+		return new Token();
+	}
+	
+	private function peekParensReference() {
+		$size = count($this->parensReference);
+		if ($size > 0) {
+			return $this->parensReference[$size - 1];
+		}
+		return new Token();
 	}
 	
 	private function nextToken($token, $offset = 1) {
 		$index = $this->tokens->indexOf($token);
-		return $this->tokens->get($index + $offset);
+		$t = $this->tokens->get($index + $offset);
+		if (empty($t)) {
+			$t = new Token();
+		}
+		return $t;
 	}
 	
 	private function prevToken($token, $offset = 1) {
 		$index = $this->tokens->indexOf($token);
-		return $this->tokens->get($index - $offset);
+		$t = $this->tokens->get($index - $offset);
+		if (empty($t)) {
+			$t = new Token();
+		}
+		return $t;
+	}
+	
+	private function isFunctionInvocation($token) {
+		$prevToken = $this->prevToken($token);
+		return $token->contents == '(' && $prevToken->type == T_STRING;
 	}
 	
 	public function getCode() {

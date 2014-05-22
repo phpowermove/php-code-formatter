@@ -18,6 +18,8 @@ class Formatter {
 		$tokens = $tokenizer->tokenize($code);
 		$visitor = new Visitor($tokens, $this->config);
 
+// 		print_r($tokens);
+		
 		foreach ($tokens as $token) {
 			$token->accept($visitor);
 		}

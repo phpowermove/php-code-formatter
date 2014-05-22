@@ -21,35 +21,23 @@ braces:
 whitespace:
 
   # global
-  before_curly: true
+  default:
+    before_curly: true
 
-  before_open: true
-  after_open: false
-  before_close: false
+    before_open: true
+    after_open: false
+    before_close: false
+    after_close: false
 
-  before_comma: false
-  after_comma: true
-  before_semicolon: false
-  after_semicolon: true
+    before_comma: false
+    after_comma: true
+    before_semicolon: false
+    after_semicolon: true
 
-  before_arrow: false
-  after_arrow: false
-  before_doublecolon: false
-  after_doublecolon: false
-
-  before_binary: true
-  after_binary: true
-  before_unary: true
-  after_unary: false
-  before_prefix: false
-  after_prefix: false
-  before_postfix: false
-  after_postfix: true
-
-  before_questionmark: true
-  after_questionmark: true
-  before_colon: true
-  after_colon: true
+    before_arrow: false
+    after_arrow: false
+    before_doublecolon: false
+    after_doublecolon: false
 
 #    # declarations
 #    struct:
@@ -133,53 +121,56 @@ whitespace:
 #    yield:
 #      before_arrow: true
 #      after_arrow: true
-#
-#    # expressions
-#    field_access:
-#      before_arrow: false
-#      after_arrow: false
-#      before_doublecolon: false
-#      after_doublecolon: false
-#
-#    function_invocation:
-#      before_open: false
-#      after_open: false
-#      before_close: false
-#      before_comma: false
-#      after_comma: true
-#      before_arrow: false
-#      after_arrow: false
-#      before_doublecolon: false
-#      after_doublecolon: false
-#
-#    assignments:
-#      before_assignment: false
-#      after_assignment: true
-#
-#    operators:
-#      before_binary: true
-#      after_binary: true
-#      before_unary: true
-#      after_unary: false
-#      before_prefix: false
-#      after_prefix: false
-#      before_postfix: false
-#      after_postfix: true
-#
+
+  # expressions
+  field_access:
+    before_arrow: false
+    after_arrow: false
+    before_doublecolon: false
+    after_doublecolon: false
+
+  function_invocation:
+    before_open: false
+    after_open: false
+    before_close: false
+    before_comma: false
+    after_comma: true
+    before_arrow: false
+    after_arrow: false
+    before_doublecolon: false
+    after_doublecolon: false
+
+  assignments:
+    before_assignment: true
+    after_assignment: true
+
+  operators:
+    before_binary: true
+    after_binary: true
+    before_unary: true
+    after_unary: false
+    before_prefix: false
+    after_prefix: false
+    before_postfix: false
+    after_postfix: true
+
 #    type_casts:
 #      before_open: false
 #      after_open: false
 #      before_close: false
-#
-#    conditionals:
-#      before_questionmark: true
-#      after_questionmark: true
-#      before_colon: true
-#      after_colon: true
-#
-#    parens:
-#      before_open: false
-#      after_open: false
+
+  conditionals:
+    before_questionmark: true
+    after_questionmark: true
+    before_colon: true
+    after_colon: true
+
+  # grouping with parenthesis
+  grouping:
+    before_open: false
+    after_open: false
+    before_close: false
+    after_close: false
 
   # arrays
 

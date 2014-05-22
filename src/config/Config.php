@@ -9,22 +9,22 @@ use Symfony\Component\Config\Definition\Processor;
 
 class Config {
 
-	private $profiles = ['java'];
 	private $config;
 
 	public function __construct($profile = null) {
-		$profiles = [];
-		$configDirectories = [__DIR__ . '/../../profiles'];
+		$profileDir = __DIR__ . '/../../profiles';
 		
-		$locator = new FileLocator($configDirectories);
+		$locator = new FileLocator([$profileDir]);
 		$loader = new YamlLoader($locator);
+		$builtIns = $this->readProfiles($loader);
 		
-		$isBuiltin = in_array($profile, $this->profiles);
+		$profiles = [];
+		$isBuiltin = in_array($profile, $builtIns);
 		
 		if ($isBuiltin) {
 			$profiles[] = $loader->load($locator->locate($profile . '.yml', null, true));
 		} else {
-			$profiles[] = $loader->load($locator->locate('java.yml', null, true));
+			$profiles[] = $loader->load($locator->locate('default.yml', null, true));
 		}
 
 		if (!empty($profile) && !$isBuiltin && file_exists($profile)) {
@@ -34,6 +34,17 @@ class Config {
 		$processor = new Processor();
 		$definition = new ProfileDefinition();
 		$this->config = $processor->processConfiguration($definition, $profiles);
+	}
+	
+	private function readProfiles(YamlLoader $loader) {
+		$profiles = [];
+		foreach (new \DirectoryIterator($this->profileDir) as $file) {
+			if ($file->isFile() && $loader->supports($file->getFilename())) {
+				$profiles[] = $file->getFilename();
+			}
+		}
+		
+		return $profiles;
 	}
 	
 	public function getConfig() {
@@ -52,9 +63,16 @@ class Config {
 		}
 	}
 	
-	public function getWhitespace($key) {
-		if (isset($this->config['whitespace'][$key])) {
-			return $this->config['whitespace'][$key];
+	public function getWhitespace($key, $context = 'default') {
+		if (isset($this->config['whitespace'][$context][$key])) {
+			$val = $this->config['whitespace'][$context][$key];
+			
+			if ($val === 'default' && $context !== 'default') {
+				return $this->getWhitespace($key);
+			}
+			return $val;
+		} else if ($context !== 'default') { // workaround?
+			return $this->getWhitespace($key);
 		}
 		return false;
 	}

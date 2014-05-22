@@ -18,6 +18,7 @@ class Tokenizer {
 	public static $OPERATORS = ['&', '&&', 'and', '|', '||', 'or', '^', 'xor', 'instanceof', '==', '>=', '>', '===', '!=', '<>', '!==', '<=', '<', '<<', '>>', '+', '-', '*', '/', 'as'];
 	public static $STRUCTURAL = [T_CLASS, T_INTERFACE, T_TRAIT, T_FUNCTION];
 	public static $STRUCTS = [T_CLASS, T_INTERFACE, T_TRAIT];
+	public static $LINE_CONTEXT = ['echo', 'global', 'static', 'yield', 'case'];
 
 	private $continue = 0;
 	
