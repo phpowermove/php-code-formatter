@@ -23,7 +23,7 @@ whitespace:
   # global
   before_curly: true
 
-  before_open: false
+  before_open: true
   after_open: false
   before_close: false
 
@@ -141,7 +141,7 @@ whitespace:
 #      before_doublecolon: false
 #      after_doublecolon: false
 #
-#    method_invocation:
+#    function_invocation:
 #      before_open: false
 #      after_open: false
 #      before_close: false
@@ -182,6 +182,12 @@ whitespace:
 #      after_open: false
 
   # arrays
+
+newlines:
+  elseif_else: false
+  catch: false
+  finally: false
+  do_while: false
 
 blanks:
 

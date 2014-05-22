@@ -28,7 +28,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
 			
 			'whitespace' => [
 				'before_curly' => true,
-				'before_open' => false,
+				'before_open' => true,
 				'after_open' => false,
 				'before_close' => false,
 				'before_comma' => false,
@@ -53,6 +53,13 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
 				'after_colon' => true
 			],
 			
+			'newlines' => [
+				'elseif_else' => false,
+				'catch' => false,
+				'finally' => false,
+				'do_while' => false
+			],
+			
 			'blanks' => [
 				'before_namespace' => 0,
 				'after_namespace' => 1,
@@ -72,5 +79,24 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
 		$config = new Config();
 		
 		$this->assertEquals($expected, $config->getconfig());
+	}
+	
+	public function testIndentation() {
+		$config = new Config();
+		
+		$this->assertEquals('tab', $config->getIndentation('character'));
+	}
+	
+	public function testBraces() {
+		$config = new Config();
+		
+		$this->assertEquals('same', $config->getBraces('struct'));
+	}
+	
+	public function testWhitespace() {
+		$config = new Config();
+		
+		$this->assertTrue($config->getWhitespace('before_curly'));
+		$this->assertFalse($config->getWhitespace('after_open'));
 	}
 }

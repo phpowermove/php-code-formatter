@@ -56,11 +56,18 @@ class Config {
 		if (isset($this->config['whitespace'][$key])) {
 			return $this->config['whitespace'][$key];
 		}
+		return false;
 	}
 	
 	public function getBlanks($key) {
 		if (isset($this->config['blanks'][$key])) {
 			return $this->config['blanks'][$key];
+		}
+	}
+	
+	public function getNewlines($key) {
+		if (isset($this->config['newlines'][$key])) {
+			return $this->config['newlines'][$key];
 		}
 	}
 }

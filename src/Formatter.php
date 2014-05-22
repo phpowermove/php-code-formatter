@@ -17,7 +17,7 @@ class Formatter {
 		$tokenizer = new Tokenizer();
 		$tokens = $tokenizer->tokenize($code);
 		$visitor = new Visitor($tokens, $this->config);
-		
+
 		foreach ($tokens as $token) {
 			$token->accept($visitor);
 		}
