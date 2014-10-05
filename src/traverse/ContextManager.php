@@ -51,6 +51,7 @@ class ContextManager implements TokenVisitor {
 		// load current contexts
 		$this->structural = $this->peekStructural();
 		$this->parens = $this->parensStack->peek();
+		$this->parensToken = $this->peekParensToken();
 		
 		// detect new contexts
 		$this->detectStructuralContext($token);
@@ -144,14 +145,7 @@ class ContextManager implements TokenVisitor {
 		return new Token();
 	}
 	
-	private function peekParens() {
-		if ($this->parensStack->size() > 0) {
-			return $this->parensStack->peek();
-		}
-		return new Token();
-	}
-	
-	private function peekParensReference() {
+	private function peekParensToken() {
 		if ($this->parensTokenStack->size() > 0) {
 			return $this->parensTokenStack->peek();
 		}

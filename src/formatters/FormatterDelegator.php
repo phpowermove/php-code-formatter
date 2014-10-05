@@ -11,6 +11,17 @@ use gossi\formatter\token\TokenVisitor;
 
 class FormatterDelegator implements TokenVisitor {
 	
+	/** @var TokenCollection */
+	protected $tokens;
+	/** @var TokenTracker */
+	protected $tracker;
+	/** @var Config */
+	protected $config;
+	/** @var Writer */
+	protected $writer;
+	/** @var ContextManager */
+	protected $context;
+	
 	private $commentsFormatter;
 	private $indentationFormatter;
 	private $newlineFormatter;
