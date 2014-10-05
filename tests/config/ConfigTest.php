@@ -108,9 +108,9 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
 				'before_traits' => 1,
 				'before_constant' => 1,
 				'before_properties' => 1,
-				'before_function' => 1,
-				'beginning_function' => 0,
-				'end_function' => 0,
+				'before_method' => 1,
+				'beginning_method' => 0,
+				'end_method' => 0,
 				'end_struct' => 1,
 				'end_file' => 1
 			]

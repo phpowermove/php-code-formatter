@@ -1,8 +1,4 @@
 <?php
-
-/*
- * Copyright 2011 Johannes M. Schmitt <schmittjoh@gmail.com> Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
- */
 namespace gossi\formatter\utils;
 
 /**
@@ -10,7 +6,6 @@ namespace gossi\formatter\utils;
  *
  * This may be used to simplify writing well-formatted code.
  *
- * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
 class Writer {
 
@@ -19,8 +14,8 @@ class Writer {
 	private $indentation;
 	
 	private $options = [
-		'indentation_character' => ' ',
-		'indentation_size' => 4
+		'indentation_character' => "\t",
+		'indentation_size' => 1
 	];
 	
 	public function __construct($options = []) {
@@ -40,7 +35,7 @@ class Writer {
 		$this->indentationLevel -= 1;
 		
 		if ($this->indentationLevel < 0) {
-			throw new \RuntimeException ( 'The identation level cannot be less than zero.' );
+			throw new \RuntimeException('The identation level cannot be less than zero.');
 		}
 		
 		return $this;
@@ -61,12 +56,12 @@ class Writer {
 	 * @param string $content        	
 	 */
 	public function write($content) {
-		$lines = explode ( "\n", $content );
+		$lines = explode("\n", $content);
 		for ($i = 0, $c = count($lines); $i < $c; $i ++) {
 			if ($this->indentationLevel > 0 
 					&& !empty($lines[$i]) 
 					&& (empty($this->content) || "\n" === substr($this->content, -1))) {
-				$this->content .= str_repeat ($this->indentation, $this->indentationLevel);
+				$this->content .= str_repeat($this->indentation, $this->indentationLevel);
 			}
 			
 			$this->content .= $lines[$i];
@@ -74,17 +69,6 @@ class Writer {
 			if ($i + 1 < $c) {
 				$this->content .= "\n";
 			}
-		}
-		
-		return $this;
-	}
-	
-	public function rtrim() {
-		$addNl = "\n" === substr($this->content, -1);
-		$this->content = rtrim($this->content);
-		
-		if ($addNl) {
-			$this->content .= "\n";
 		}
 		
 		return $this;

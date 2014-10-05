@@ -4,17 +4,26 @@ namespace gossi\formatter\config;
 
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
 class ProfileDefinition implements ConfigurationInterface {
 
 	public function getConfigTreeBuilder() {
 		$treeBuilder = new TreeBuilder();
+		$rootNode = $treeBuilder->root('formatter');
+		
+		$this->addIndentationSection($rootNode);
+		$this->addBracesSection($rootNode);
+		$this->addWhitespaceSection($rootNode);
+		$this->addNewlinesSection($rootNode);
+		$this->addBlanksSection($rootNode);
 
-		$formatter = $treeBuilder->root('formatter');
-		$formatter
+		return $treeBuilder;
+	}
+	
+	private function addIndentationSection(ArrayNodeDefinition $node) {
+		$node
 			->children()
-			
-				// indentation
 				->arrayNode('indentation')
 					->children()
 						->enumNode('character')
@@ -27,11 +36,16 @@ class ProfileDefinition implements ConfigurationInterface {
 						->booleanNode('switch')->end()
 						->booleanNode('case')->end()
 						->booleanNode('break')->end()
-						->booleanNode('empty_lines')->end()
+						->booleanNode('empty_lines')
 					->end()
 				->end()
-		
-				// braces
+			->end()
+		;
+	}
+	
+	private function addBracesSection(ArrayNodeDefinition $node) {
+		$node
+			->children()
 				->arrayNode('braces')
 					->children()
 						->enumNode('struct')
@@ -45,8 +59,13 @@ class ProfileDefinition implements ConfigurationInterface {
 						->end()
 					->end()
 				->end()
-
-				// whitespace
+			->end()
+		;
+	}
+	
+	private function addWhitespaceSection(ArrayNodeDefinition $node) {
+		$node
+			->children()
 				->arrayNode('whitespace')
 					->children()
 						->arrayNode('default')
@@ -239,8 +258,13 @@ class ProfileDefinition implements ConfigurationInterface {
 						->end()
 					->end()
 				->end()
-
-				// newlines
+			->end()
+		;
+	}
+	
+	private function addNewlinesSection(ArrayNodeDefinition $node) {
+		$node
+			->children()
 				->arrayNode('newlines')
 					->children()
 						->booleanNode('elseif_else')->end()
@@ -249,8 +273,13 @@ class ProfileDefinition implements ConfigurationInterface {
 						->booleanNode('do_while')->end()
 					->end()
 				->end()
-				
-				// blanks
+			->end()
+		;
+	}
+	
+	private function addBlanksSection(ArrayNodeDefinition $node) {
+		$node
+			->children()
 				->arrayNode('blanks')
 					->children()
 						->integerNode('before_namespace')->end()
@@ -260,17 +289,14 @@ class ProfileDefinition implements ConfigurationInterface {
 						->integerNode('before_traits')->end()
 						->integerNode('before_constant')->end()
 						->integerNode('before_properties')->end()
-						->integerNode('before_function')->end()
-						->integerNode('beginning_function')->end()
-						->integerNode('end_function')->end()
+						->integerNode('before_method')->end()
+						->integerNode('beginning_method')->end()
+						->integerNode('end_method')->end()
 						->integerNode('end_struct')->end()
 						->integerNode('end_file')->end()
 					->end()
 				->end()
-				
 			->end()
 		;
-		
-		return $treeBuilder;
 	}
 }

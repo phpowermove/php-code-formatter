@@ -4,6 +4,7 @@ namespace gossi\formatter;
 use gossi\formatter\token\Tokenizer;
 use gossi\formatter\visitor\Visitor;
 use gossi\formatter\config\Config;
+use gossi\formatter\formatters\FormatterDelegator;
 
 class Formatter {
 	
@@ -16,8 +17,8 @@ class Formatter {
 	public function format($code) {
 		$tokenizer = new Tokenizer();
 		$tokens = $tokenizer->tokenize($code);
-		$visitor = new Visitor($tokens, $this->config);
-
+		$visitor = new FormatterDelegator($tokens, $this->config);
+		
 // 		print_r($tokens);
 		
 		foreach ($tokens as $token) {

@@ -16,7 +16,7 @@ class Config {
 		
 		$locator = new FileLocator([$profileDir]);
 		$loader = new YamlLoader($locator);
-		$builtIns = $this->readProfiles($loader);
+		$builtIns = $this->readProfiles($loader, $profileDir);
 		
 		$profiles = [];
 		$isBuiltin = in_array($profile, $builtIns);
@@ -36,9 +36,9 @@ class Config {
 		$this->config = $processor->processConfiguration($definition, $profiles);
 	}
 	
-	private function readProfiles(YamlLoader $loader) {
+	private function readProfiles(YamlLoader $loader, $profileDir) {
 		$profiles = [];
-		foreach (new \DirectoryIterator($this->profileDir) as $file) {
+		foreach (new \DirectoryIterator($profileDir) as $file) {
 			if ($file->isFile() && $loader->supports($file->getFilename())) {
 				$profiles[] = $file->getFilename();
 			}
@@ -83,7 +83,7 @@ class Config {
 		}
 	}
 	
-	public function getNewlines($key) {
+	public function getNewline($key) {
 		if (isset($this->config['newlines'][$key])) {
 			return $this->config['newlines'][$key];
 		}

@@ -2,126 +2,58 @@
 
 namespace gossi\formatter\token;
 
-class TokenCollection implements \Iterator, \ArrayAccess, \Countable {
+use gossi\collection\ArrayList;
+
+class TokenCollection extends ArrayList {
 	
-	private $collection = [];
 	
-	public function __construct($collection = []) {
-		$this->collection = $collection;
-	}
-	
-	public function add(Token $token) {
-		$this->collection[] = $token;
-	}
-	
+	/**
+	 * Retrieves a token at the given index
+	 * 
+	 * @param int $index the given index
+	 * @return Token 
+	 */
 	public function get($index) {
-		if (isset($this->collection[$index])) {
-			return $this->collection[$index];
-		}
+		return parent::get($index);
 	}
 
-	public function remove(Token $token) {
-		$index = array_search($token, $this->collection, true);
-		if ($index !== null) {
-			unset($this->collection[$index]);
-		}
-	}
-	
-	public function indexOf(Token $token) {
-		return array_search($token, $this->collection, true);
-	}
-	
-	public function nextToken($offset) {
+	/**
+	 * Returns the next non-whitespace token
+	 * 
+	 * @param int $index
+	 * @return array [index, token]
+	 */
+	public function nextToken($index) {
 		$size = count($this->collection);
-		do {
-			$offset++;
-			$token = $this->collection[$offset];
-		} while ($token->type == T_WHITESPACE && $offset < $size);
-
-		return [$offset, $token];
-	}
-	
-	public function prevToken($offset) {
-		do {
-			$offset--;
-			$token = $this->collection[$offset];
-		} while ($token->type == T_WHITESPACE && $offset >= 0);
-	
-		return [$offset, $token];
-	}
-	
-	/**
-	 * @internal
-	 */
-	function rewind() {
-		reset($this->collection);
-	}
-	
-	/**
-	 * @internal
-	 */
-	function current() {
-		return current($this->collection);
-	}
-	
-	/**
-	 * @internal
-	 */
-	function key() {
-		return key($this->collection);
-	}
-	
-	/**
-	 * @internal
-	 */
-	function next() {
-		next($this->collection);
-	}
-	
-	/**
-	 * @internal
-	 */
-	function valid() {
-		return key($this->collection) !== null;
-	}
-	
-	/**
-	 * @internal
-	 */
-	public function offsetSet($offset, $value) {
-		if (is_null($offset)) {
-			$this->collection[] = $value;
-		} else {
-			$this->collection[$offset] = $value;
+		if ($index >= $size - 1) {
+			return [$index + 1, null];
 		}
-	}
 
-	/**
-	 * @internal
-	 */
-	public function offsetExists($offset) {
-		return isset($this->collection[$offset]);
+		do {
+			$index++;
+			$token = $this->collection[$index];
+		} while ($token->type == T_WHITESPACE && $index < $size);
+
+		return [$index, $token];
 	}
 	
 	/**
-	 * @internal
+	 * Returns the previous non-whitespace token
+	 *
+	 * @param int $index
+	 * @return array [index, token]
 	 */
-	public function offsetUnset($offset) {
-		unset($this->collection[$offset]);
-	}
+	public function prevToken($index) {
+		if ($index < 1) {
+			return [-1, null];
+		}
+
+		do {
+			$index--;
+			$token = $this->collection[$index];
+		} while ($token->type == T_WHITESPACE && $index >= 0);
 	
-	/**
-	 * @internal
-	 */
-	public function offsetGet($offset) {
-		return isset($this->collection[$offset]) ? $this->collection[$offset] : null;
-	}
-	
-	/**
-	 * @internal
-	 */
-	public function count() {
-		return count($this->collection);
+		return [$index, $token];
 	}
 
 }

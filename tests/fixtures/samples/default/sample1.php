@@ -5,7 +5,7 @@ if ($code == BAD) {
 	$action = KEEP;
 }
 for ($i = 0; $i < 10; $i++) {
-	while ($j > 0) {
+	while ($j > (1 - 1)) {
 		$j++;
 		doCall($i + $j);
 		if ($k) {
