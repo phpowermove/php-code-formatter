@@ -74,6 +74,21 @@ class Writer {
 		return $this;
 	}
 	
+	public function rtrim() {
+		$addNl = "\n" === substr($this->content, -1);
+		$this->content = rtrim($this->content);
+		
+		if ($addNl) {
+			$this->content .= "\n";
+		}
+		
+		return $this;
+	}
+
+	public function endsWith($search) {
+		return substr($this->content, -strlen($search)) === $search;
+	}
+
 	public function reset() {
 		$this->content = '';
 		$this->indentationLevel = 0;
