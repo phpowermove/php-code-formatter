@@ -1,6 +1,6 @@
 <?php
 namespace gossi\formatter\token;
 
-interface TokenVisitor {
+interface TokenVisitorInterface {
 	public function visit(Token $token);
 }

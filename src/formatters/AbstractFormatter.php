@@ -7,9 +7,9 @@ use gossi\formatter\traverse\ContextManager;
 use gossi\formatter\traverse\TokenTracker;
 use gossi\formatter\utils\Writer;
 use gossi\formatter\token\Token;
-use gossi\formatter\token\TokenVisitor;
+use gossi\formatter\token\TokenVisitorInterface;
 
-abstract class AbstractFormatter implements TokenVisitor {
+abstract class AbstractFormatter implements TokenVisitorInterface {
 	
 	/** @var TokenCollection */
 	protected $tokens;

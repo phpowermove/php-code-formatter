@@ -4,9 +4,9 @@ namespace gossi\formatter\traverse;
 use gossi\formatter\token\Token;
 use gossi\collection\Stack;
 use gossi\formatter\token\Tokenizer;
-use gossi\formatter\token\TokenVisitor;
+use gossi\formatter\token\TokenVisitorInterface;
 
-class ContextManager implements TokenVisitor {
+class ContextManager implements TokenVisitorInterface {
 
 	const LEXICAL_BLOCK = 'block';
 	const LEXICAL_CALL = 'call';
@@ -24,6 +24,8 @@ class ContextManager implements TokenVisitor {
 	private $structural;
 	private $parens;
 	private $parensToken;
+	private $isStructBody = false;
+	private $isFunctionBody = false;
 
 	// stacks
 	private $structuralStack;
@@ -70,13 +72,29 @@ class ContextManager implements TokenVisitor {
 			$this->structuralStack->push($this->structuralDetected);
 			$this->structural = $this->structuralDetected;
 			$this->structuralDetected = null;
+			
+			if (in_array($this->structural->type, Tokenizer::$STRUCTS)) {
+				$this->isStructBody = true;
+			}
+			
+			if ($this->structural->type == T_FUNCTION) {
+				$this->isFunctionBody = true;
+			}
 		}
 
 		// popping structural context
 		if ($token->contents == '}') {
 			$this->structural = $this->structuralStack->pop();
+			
+			if ($this->isStructBody && in_array($this->structural->type, Tokenizer::$STRUCTS)) {
+				$this->isStructBody = false;
+			}
+			
+			if ($this->isFunctionBody && $this->structural->type == T_FUNCTION) {
+				$this->isFunctionBody = false;
+			}
 		}
-		
+
 		// neglect structural detection
 		if ($this->structuralDetected !== null && $token->contents == ';' &&
 				!($this->parens == self::LEXICAL_BLOCK || $this->parens == self::LEXICAL_GROUP)) {
@@ -86,6 +104,14 @@ class ContextManager implements TokenVisitor {
 	
 	public function isStructuralContextDetected() {
 		return $this->structuralDetected !== null;
+	}
+	
+	public function isStructBody() {
+		return $this->isStructBody;
+	}
+	
+	public function isFunctionBody() {
+		return $this->isFunctionBody;
 	}
 	
 	private function detectParensContext(Token $token) {

@@ -19,7 +19,7 @@ class Token {
 		}
 	}
 	
-	public function accept(TokenVisitor $visitor) {
+	public function accept(TokenVisitorInterface $visitor) {
 		return $visitor->visit($this);
 	}
 

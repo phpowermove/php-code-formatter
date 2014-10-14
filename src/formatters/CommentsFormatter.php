@@ -22,4 +22,10 @@ class CommentsFormatter extends AbstractSpecializedFormatter {
 			$this->defaultFormatter->hideToken();
 		}
 	}
+
+	public static function isComment(Token $token) {
+		return $token->type == T_DOC_COMMENT
+				|| ($token->type == T_INLINE_HTML && strpos($token->contents, '/*') !== 0)
+				|| $token->type == T_COMMENT;
+	}
 }

@@ -8,8 +8,13 @@ use a\b\Gamma;
  * @author gossi
  */
 class D {
+	use Alpha;
 	const XYZ = 'xyz';
 	public $content;
+	/**
+	 * @var unknown
+	 */
+	public $type;
 	/**
 	 * PHPDoc for Constructor
 	 * 

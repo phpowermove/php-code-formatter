@@ -187,7 +187,7 @@ blanks:
   after_namespace: 1
   after_use: 1
 
-  # class
+  # structs
   before_struct: 1
   before_traits: 1
   before_constant: 1
@@ -197,4 +197,5 @@ blanks:
   end_method: 0
   end_struct: 1
 
+  # file
   end_file: 1

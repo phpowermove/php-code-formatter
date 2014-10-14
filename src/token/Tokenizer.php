@@ -22,8 +22,7 @@ class Tokenizer {
 
 	private $continue = 0;
 	
-	public function __construct() {
-		
+	public function __construct() {		
 	}
 
 	/**
@@ -37,38 +36,7 @@ class Tokenizer {
 			$tokens->add(new Token($token));
 		}
 
-		$tokens = $this->filterTokens($tokens);
-
 		return $tokens;
 	}
-	
-	/**
-	 *
-	 * @param TokenCollection $tokens
-	 * @return TokenCollection
-	 */
-	private function filterTokens(TokenCollection $tokens) {
-		$filteredTokens = new TokenCollection();
 
-		for ($i = 0, $n = $tokens->size(); $i < $n; $i++) {
-			$token = $tokens->get($i);
-			
-			// fix ELSEIF
-			if ($token->type == T_ELSE) {
-				list($j, $nextToken) = $tokens->nextToken($i);
-				if ($nextToken->type == T_IF) {
-					$i = $j;
-					$filteredTokens->add(new Token([T_ELSEIF, 'else if']));
-				} else {
-					$filteredTokens->add($token);
-				}
-			} 
-			
-			// return unless whitespace
-			else if ($token->type !== T_WHITESPACE) {
-				$filteredTokens->add($token);
-			}
-		}
-		return $filteredTokens;
-	}
 }

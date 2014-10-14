@@ -5,19 +5,19 @@ use gossi\formatter\Formatter;
 
 trait SamplesTrait {
 	
-	private function getContent($file) {
+	protected function getContent($file) {
 		return file_get_contents(sprintf(__DIR__.'/../fixtures/samples/%s.php', $file));
 	}
 	
-	private function getRawContent($file) {
+	protected function getRawContent($file) {
 		return $this->getContent('raw/' . $file);
 	}
 	
-	private function getDefaultContent($file) {
+	protected function getDefaultContent($file) {
 		return $this->getContent('default/' . $file);
 	}
 	
-	private function compareSample($sample) {
+	protected function compareSample($sample) {
 		$raw = $this->getRawContent($sample);
 		$formatter = new Formatter();
 	

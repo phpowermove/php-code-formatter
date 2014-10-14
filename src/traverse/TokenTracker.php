@@ -3,9 +3,9 @@ namespace gossi\formatter\traverse;
 
 use gossi\formatter\token\TokenCollection;
 use gossi\formatter\token\Token;
-use gossi\formatter\token\TokenVisitor;
+use gossi\formatter\token\TokenVisitorInterface;
 
-class TokenTracker implements TokenVisitor {
+class TokenTracker implements TokenVisitorInterface {
 	
 	private $tokens;
 	private $context;
@@ -18,13 +18,13 @@ class TokenTracker implements TokenVisitor {
 		$this->context = $contextManager;
 		$this->context->setTracker($this);
 	}
-	
+
 	public function visit(Token $token) {
 		$this->next = $this->nextToken($token);
 		$this->prev = $this->prevToken($token);
 		$this->context->visit($token);
 	}
-	
+
 	public function getNextToken() {
 		return $this->next;
 	}
@@ -57,6 +57,10 @@ class TokenTracker implements TokenVisitor {
 			$t = new Token();
 		}
 		return $t;
+	}
+
+	public function isLastToken(Token $token) {
+		return $this->tokens->indexOf($token) == $this->tokens->size() - 1;
 	}
 
 }
