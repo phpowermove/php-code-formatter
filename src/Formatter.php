@@ -29,7 +29,7 @@ class Formatter {
 		$analyzer->analyze();
 
 		// formatting
-		$visitor = new DelegateFormatter($tokens, $this->config);
+		$visitor = new DelegateFormatter($tokens, $this->config, $analyzer);
 		foreach ($tokens as $token) {
 			$token->accept($visitor);
 		}

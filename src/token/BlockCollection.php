@@ -25,7 +25,7 @@ class BlockCollection extends ArrayList {
 	 */
 	public function findBlockByStart(Token $token) {
 		foreach ($this->collection as $block) {
-			if ($block->start == $token) {
+			if ($block->start === $token) {
 				return $block;
 			}
 		}

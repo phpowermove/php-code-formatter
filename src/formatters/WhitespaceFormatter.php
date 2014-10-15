@@ -39,8 +39,7 @@ class WhitespaceFormatter extends AbstractSpecializedFormatter {
 	
 	private function applyKeywords(Token $token) {
 		if (in_array($token->type, Tokenizer::$KEYWORDS)) {
-			$this->defaultFormatter->hideToken();
-			$this->writer->write($token->contents . ' ');
+			$this->defaultFormatter->addPostWrite(' ');
 		}
 	}
 	
@@ -131,14 +130,11 @@ class WhitespaceFormatter extends AbstractSpecializedFormatter {
 
 	private function whitespaceBeforeAfter(Token $token, $key, $context = 'default') {
 		if ($this->config->getWhitespace('before_' . $key, $context)) {
-			$this->writer->write(' ');
+			$this->defaultFormatter->addPreWrite(' ');
 		}
-	
-		$this->defaultFormatter->hideToken();
-		$this->writer->write($token->contents);
 		
 		if ($this->config->getWhitespace('after_' . $key, $context)) {
-			$this->writer->write(' ');
+			$this->defaultFormatter->addPostWrite(' ');
 		}
 	}
 	

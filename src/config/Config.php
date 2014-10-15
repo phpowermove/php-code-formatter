@@ -81,6 +81,7 @@ class Config {
 		if (isset($this->config['blanks'][$key])) {
 			return $this->config['blanks'][$key];
 		}
+		return 0;
 	}
 	
 	public function getNewline($key) {

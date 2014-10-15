@@ -13,7 +13,6 @@ class DefaultFormatter extends AbstractFormatter {
 	
 	private $preCommands;
 	private $postCommands;
-	private $canWriteToken = true;
 	
 	public function __construct(TokenCollection $tokens, Config $config, ContextManager $context, TokenTracker $tracker, Writer $writer) {
 		parent::__construct($tokens, $config, $context, $tracker, $writer);
@@ -54,29 +53,30 @@ class DefaultFormatter extends AbstractFormatter {
 		$this->postCommands->enqueue(['outdent']);
 	}
 	
-	public function hideToken() {
-		$this->canWriteToken = false;
-	}
-	
 	public function doVisit(Token $token) {
 		$parens = $this->context->getParensContext();
+		
+		// pre commands
+		if ($token->contents == 'use') {
+			echo 'pre Commands';
+		}
+		$this->processCommands($this->preCommands);
 		
 		// finish line on semicolon
 		if ($token->contents == ';' && $parens != ContextManager::LEXICAL_BLOCK) {
 			$this->context->resetLineContext();
 			$this->writer->writeln($token->contents);
-		} 
-		
-		
-		// when no semicolon and token output allowed
-		else if ($token->contents != ';' && $this->canWriteToken) {
-			$this->processCommands($this->preCommands);
-			$this->writer->write($token->contents);
-			$this->processCommands($this->postCommands);
 		}
 		
+		// when no semicolon and token output allowed
+		else {
+			$this->writer->write($token->contents);
+		}
+
+		// post commands
+		$this->processCommands($this->postCommands);
+		
 		// reset
-		$this->canWriteToken = true;
 		$this->preCommands->clear();
 		$this->postCommands->clear();
 	}

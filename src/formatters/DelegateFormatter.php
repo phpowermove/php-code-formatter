@@ -8,6 +8,7 @@ use gossi\formatter\traverse\TokenTracker;
 use gossi\formatter\utils\Writer;
 use gossi\formatter\token\Token;
 use gossi\formatter\token\TokenVisitorInterface;
+use gossi\formatter\parser\Analyzer;
 
 class DelegateFormatter implements TokenVisitorInterface {
 	
@@ -22,13 +23,14 @@ class DelegateFormatter implements TokenVisitorInterface {
 	/** @var ContextManager */
 	protected $context;
 	
+	private $defaultFormatter;
 	private $commentsFormatter;
 	private $indentationFormatter;
 	private $newlineFormatter;
 	private $whitespaceFormatter;
-	private $defaultFormatter;
+	private $blanksFormatter;
 	
-	public function __construct(TokenCollection $tokens, Config $config) {
+	public function __construct(TokenCollection $tokens, Config $config, Analyzer $analyzer) {
 		$this->config = $config;
 		$this->tokens = $tokens;
 		$this->context = new ContextManager();
@@ -44,6 +46,7 @@ class DelegateFormatter implements TokenVisitorInterface {
 		$this->indentationFormatter = new IndentationFormatter($tokens, $config, $this->context, $this->tracker, $this->writer, $this->defaultFormatter);
 		$this->newlineFormatter = new NewlineFormatter($tokens, $config, $this->context, $this->tracker, $this->writer, $this->defaultFormatter);
 		$this->whitespaceFormatter = new WhitespaceFormatter($tokens, $config, $this->context, $this->tracker, $this->writer, $this->defaultFormatter);
+		$this->blanksFormatter = new BlanksFormatter($tokens, $config, $this->context, $this->tracker, $this->writer, $this->defaultFormatter, $analyzer);
 	}
 	
 	public function visit(Token $token) {
@@ -54,6 +57,7 @@ class DelegateFormatter implements TokenVisitorInterface {
 		$this->indentationFormatter->visit($token);
 		$this->newlineFormatter->visit($token);
 		$this->whitespaceFormatter->visit($token);
+		$this->blanksFormatter->visit($token);
 		$this->defaultFormatter->visit($token);
 	}
 	
