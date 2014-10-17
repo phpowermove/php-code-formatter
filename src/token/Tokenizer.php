@@ -22,7 +22,7 @@ class Tokenizer {
 
 	private $continue = 0;
 	
-	public function __construct() {		
+	public function __construct() {
 	}
 
 	/**

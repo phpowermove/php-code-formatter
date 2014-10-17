@@ -37,13 +37,4 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase {
 		$this->tracker->visit($firstIf);
 		$this->assertEquals($firstIfOpen, $this->tracker->getNextToken());
 	}
-	
-	public function testContextManager() {
-		$firstIfOpen = $this->tokens->get(2);
-		
-		$this->tracker->visit($firstIfOpen);
-		$context = $this->context->getParensContext();
-		
-		$this->assertEquals(ContextManager::LEXICAL_BLOCK, $context);
-	}
 }

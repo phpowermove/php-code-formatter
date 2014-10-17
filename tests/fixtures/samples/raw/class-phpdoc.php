@@ -22,6 +22,9 @@ class D {
 	 */
 	public function __construct() {
 		// do something
+		if ($this->content == self::XYZ) {
+			doSomething();
+		}
 	}
 	/**
 	 * Description for mthd

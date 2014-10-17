@@ -57,7 +57,7 @@ class DelegateFormatter implements TokenVisitorInterface {
 		$this->indentationFormatter->visit($token);
 		$this->newlineFormatter->visit($token);
 		$this->whitespaceFormatter->visit($token);
-		$this->blanksFormatter->visit($token);
+// 		$this->blanksFormatter->visit($token);
 		$this->defaultFormatter->visit($token);
 	}
 	

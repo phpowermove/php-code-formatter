@@ -4,6 +4,7 @@ namespace gossi\formatter\formatters;
 use gossi\formatter\token\Token;
 use gossi\formatter\token\Tokenizer;
 use gossi\formatter\traverse\ContextManager;
+use gossi\formatter\entities\Group;
 
 class WhitespaceFormatter extends AbstractSpecializedFormatter {
 	
@@ -81,10 +82,10 @@ class WhitespaceFormatter extends AbstractSpecializedFormatter {
 	private function applySyntax(Token $token) {
 		if (array_key_exists($token->contents, self::$SYNTAX)) {
 			$key = self::$SYNTAX[$token->contents];
-			$parens = $this->context->getParensContext();
+			$group = $this->context->getGroupContext();
 			
 			// return when semicolon is not inside a block context
-			if ($token->contents == ';' && $parens != ContextManager::LEXICAL_BLOCK) {
+			if ($token->contents == ';' && $group->type != Group::BLOCK) {
 				return;
 			}
 			
@@ -95,8 +96,7 @@ class WhitespaceFormatter extends AbstractSpecializedFormatter {
 	}
 	
 	private function findContext(Token $token) {
-		$parens = $this->context->getParensContext();
-		$parensToken = $this->context->getParensTokenContext();
+		$group = $this->context->getGroupContext();
 		$context = 'default';
 		
 		// first check the context of the current line
@@ -105,12 +105,12 @@ class WhitespaceFormatter extends AbstractSpecializedFormatter {
 		}
 		
 		// is it a parens group?
-		else if ($parens == ContextManager::LEXICAL_GROUP) {
+		else if ($group->type == Group::GROUP) {
 			$context = 'grouping';
 		}
 		
 		// a function call?
-		else if ($parens == ContextManager::LEXICAL_CALL) {
+		else if ($group->type == Group::CALL) {
 			$context = 'function_invocation';
 		}
 		
@@ -120,9 +120,9 @@ class WhitespaceFormatter extends AbstractSpecializedFormatter {
 		}
 		
 		// or a given block statement?
-		else if ($parens == ContextManager::LEXICAL_BLOCK
-				&& isset(self::$BLOCK_CONTEXT_MAPPING[$parensToken->type])) {
-			$context = self::$BLOCK_CONTEXT_MAPPING[$parensToken->type];
+		else if ($group->type == Group::BLOCK
+				&& isset(self::$BLOCK_CONTEXT_MAPPING[$group->token->type])) {
+			$context = self::$BLOCK_CONTEXT_MAPPING[$group->token->type];
 		}
 		
 		return $context;

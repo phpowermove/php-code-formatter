@@ -8,6 +8,7 @@ use gossi\formatter\traverse\ContextManager;
 use gossi\formatter\traverse\TokenTracker;
 use gossi\formatter\utils\Writer;
 use gossi\collection\Queue;
+use gossi\formatter\entities\Group;
 
 class DefaultFormatter extends AbstractFormatter {
 	
@@ -54,7 +55,7 @@ class DefaultFormatter extends AbstractFormatter {
 	}
 	
 	public function doVisit(Token $token) {
-		$parens = $this->context->getParensContext();
+		$group = $this->context->getGroupContext();
 		
 		// pre commands
 		if ($token->contents == 'use') {
@@ -63,7 +64,7 @@ class DefaultFormatter extends AbstractFormatter {
 		$this->processCommands($this->preCommands);
 		
 		// finish line on semicolon
-		if ($token->contents == ';' && $parens != ContextManager::LEXICAL_BLOCK) {
+		if ($token->contents == ';' && $group->type != Group::BLOCK) {
 			$this->context->resetLineContext();
 			$this->writer->writeln($token->contents);
 		}

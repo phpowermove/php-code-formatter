@@ -9,6 +9,9 @@ class D {
 	public $type;
 	public function __construct() {
 		// do something
+		if ($this->content == self::XYZ) {
+			doSomething();
+		}
 	}
 	public function mthd() {
 		

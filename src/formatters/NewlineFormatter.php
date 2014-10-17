@@ -3,6 +3,7 @@ namespace gossi\formatter\formatters;
 
 use gossi\formatter\token\Token;
 use gossi\formatter\token\Tokenizer;
+use gossi\formatter\entities\Block;
 
 class NewlineFormatter extends AbstractSpecializedFormatter {
 	
@@ -13,20 +14,20 @@ class NewlineFormatter extends AbstractSpecializedFormatter {
 	
 	private function preOpenCurlyBrace(Token $token) {
 		if ($token->contents == '{') {
-			$structural = $this->context->getStructuralContext();
-				
+			$block = $this->context->getBlockContext();
+
 			// curly braces in strucs
-			if (in_array($structural->type, Tokenizer::$STRUCTS)) {
+			if (in_array($block->type, Block::$STRUCTS)) {
 				$this->newlineOrSpaceBeforeCurly($this->config->getBraces('struct') == 'next');
 			}
 				
 			// curly braces in functions
-			else if ($structural->type == T_FUNCTION) {
+			else if (in_array($block->type, Block::$ROUTINE)) {
 				$this->newlineOrSpaceBeforeCurly($this->config->getBraces('function') == 'next');
 			}
-				
+
 			// curly braces in blocks
-			if (in_array($structural->type, Tokenizer::$BLOCKS)) {
+			else if (in_array($block->type, Block::$BLOCKS)) {
 				$this->newlineOrSpaceBeforeCurly($this->config->getBraces('blocks') == 'next');
 			}
 			
@@ -37,10 +38,10 @@ class NewlineFormatter extends AbstractSpecializedFormatter {
 	
 	private function postCloseCurlyBrace(Token $token) {
 		if ($token->contents == '}') {
-			$structural = $this->context->getStructuralContext();
+			$block = $this->context->getBlockContext();
 				
 			// check new line before T_ELSE and T_ELSEIF
-			if (in_array($structural->type, [T_IF, T_ELSEIF])
+			if (in_array($block->type, [Block::TYPE_IF, Block::TYPE_ELSEIF])
 					&& in_array($this->nextToken->type, [T_ELSE, T_ELSEIF])) {
 				$this->newlineOrSpaceAfterCurly($this->config->getNewline('elseif_else'));
 			}
@@ -55,8 +56,8 @@ class NewlineFormatter extends AbstractSpecializedFormatter {
 				$this->newlineOrSpaceAfterCurly($this->config->getNewline('finally'));
 			}
 						
-			// check new line before T_CATCH
-			else if ($structural->type == T_DO
+			// check new line before T_DO
+			else if ($block->type == Block::TYPE_DO
 					&& $this->nextToken->type == T_WHILE) {
 				$this->newlineOrSpaceAfterCurly($this->config->getNewline('do_while'));
 			}
