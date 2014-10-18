@@ -23,8 +23,10 @@ A library for formatting php code.
 Via composer:
 
 ```json
-"require": {
-    "gossi/php-code-formatter": "dev-master"
+{
+    "require": {
+        "gossi/php-code-formatter": "dev-master"
+    }
 }
 ```
 

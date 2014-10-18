@@ -14,9 +14,6 @@ class NewlineFormatter extends SpecializedFormatter {
 		$this->context->addListener(Context::EVENT_BLOCK_LEAVE, [$this, 'postCloseCurlyBrace']);
 	}
 	
-	protected function doVisitToken(Token $token) {
-	}
-	
 	public function preOpenCurlyBrace(BlockEvent $event) {
 		$block = $event->getBlock();
 		
