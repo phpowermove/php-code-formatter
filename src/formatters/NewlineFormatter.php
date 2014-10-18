@@ -4,68 +4,70 @@ namespace gossi\formatter\formatters;
 use gossi\formatter\token\Token;
 use gossi\formatter\token\Tokenizer;
 use gossi\formatter\entities\Block;
+use gossi\formatter\parser\Context;
+use gossi\formatter\events\BlockEvent;
 
-class NewlineFormatter extends AbstractSpecializedFormatter {
+class NewlineFormatter extends SpecializedFormatter {
 	
-	protected function doVisit(Token $token) {
-		$this->preOpenCurlyBrace($token);
-		$this->postCloseCurlyBrace($token);
+	protected function init() {
+		$this->context->addListener(Context::EVENT_BLOCK_ENTER, [$this, 'preOpenCurlyBrace']);
+		$this->context->addListener(Context::EVENT_BLOCK_LEAVE, [$this, 'postCloseCurlyBrace']);
 	}
 	
-	private function preOpenCurlyBrace(Token $token) {
-		if ($token->contents == '{') {
-			$block = $this->context->getBlockContext();
-
-			// curly braces in strucs
-			if (in_array($block->type, Block::$STRUCTS)) {
-				$this->newlineOrSpaceBeforeCurly($this->config->getBraces('struct') == 'next');
-			}
-				
-			// curly braces in functions
-			else if (in_array($block->type, Block::$ROUTINE)) {
-				$this->newlineOrSpaceBeforeCurly($this->config->getBraces('function') == 'next');
-			}
-
-			// curly braces in blocks
-			else if (in_array($block->type, Block::$BLOCKS)) {
-				$this->newlineOrSpaceBeforeCurly($this->config->getBraces('blocks') == 'next');
-			}
-			
-			// new line after open curly brace
-			$this->defaultFormatter->addPostWriteln();
+	protected function doVisitToken(Token $token) {
+	}
+	
+	public function preOpenCurlyBrace(BlockEvent $event) {
+		$block = $event->getBlock();
+		
+		// curly braces in strucs
+		if ($block->isStruct()) {
+			$this->newlineOrSpaceBeforeCurly($this->config->getBraces('struct') == 'next');
 		}
+			
+		// curly braces in functions
+		else if ($block->isRoutine()) {
+			$this->newlineOrSpaceBeforeCurly($this->config->getBraces('function') == 'next');
+		}
+
+		// curly braces in blocks
+		else if ($block->isBlock()) {
+			$this->newlineOrSpaceBeforeCurly($this->config->getBraces('blocks') == 'next');
+		}
+		
+		// new line after open curly brace
+		$this->defaultFormatter->addPostWriteln();
 	}
 	
-	private function postCloseCurlyBrace(Token $token) {
-		if ($token->contents == '}') {
-			$block = $this->context->getBlockContext();
-				
-			// check new line before T_ELSE and T_ELSEIF
-			if (in_array($block->type, [Block::TYPE_IF, Block::TYPE_ELSEIF])
-					&& in_array($this->nextToken->type, [T_ELSE, T_ELSEIF])) {
-				$this->newlineOrSpaceAfterCurly($this->config->getNewline('elseif_else'));
-			}
+	public function postCloseCurlyBrace(BlockEvent $event) {
+		$block = $event->getBlock();
+		$token = $event->getToken();
+		$nextToken = $this->parser->getTracker()->nextToken($token);
+			
+		// check new line before T_ELSE and T_ELSEIF
+		if (in_array($block->type, [Block::TYPE_IF, Block::TYPE_ELSEIF])
+				&& in_array($nextToken->type, [T_ELSE, T_ELSEIF])) {
+			$this->newlineOrSpaceAfterCurly($this->config->getNewline('elseif_else'));
+		}
 
-			// check new line before T_CATCH
-			else if ($this->nextToken->type == T_CATCH) {
-				$this->newlineOrSpaceAfterCurly($this->config->getNewline('catch'));
-			}
-				
-			// check new line before finally
-			else if ($token->contents == 'finally') {
-				$this->newlineOrSpaceAfterCurly($this->config->getNewline('finally'));
-			}
-						
-			// check new line before T_DO
-			else if ($block->type == Block::TYPE_DO
-					&& $this->nextToken->type == T_WHILE) {
-				$this->newlineOrSpaceAfterCurly($this->config->getNewline('do_while'));
-			}
+		// check new line before T_CATCH
+		else if ($this->nextToken->type == T_CATCH) {
+			$this->newlineOrSpaceAfterCurly($this->config->getNewline('catch'));
+		}
+			
+		// check new line before finally
+		else if ($token->contents == 'finally') {
+			$this->newlineOrSpaceAfterCurly($this->config->getNewline('finally'));
+		}
 
-			// anyway a new line
-			else {
-				$this->defaultFormatter->addPostWriteln();
-			}
+		// check new line before while in a do-while block
+		else if ($block->type == Block::TYPE_DO && $nextToken->type == T_WHILE) {
+			$this->newlineOrSpaceAfterCurly($this->config->getNewline('do_while'));
+		}
+
+		// anyway a new line
+		else {
+			$this->defaultFormatter->addPostWriteln();
 		}
 	}
 	

@@ -3,9 +3,9 @@ namespace gossi\formatter\collections;
 
 use gossi\collection\ArrayList;
 use gossi\formatter\entities\Unit;
+use gossi\formatter\token\Token;
 
 class UnitCollection extends ArrayList {
-	
 	
 	/**
 	 * Retrieves a token at the given index
@@ -23,7 +23,7 @@ class UnitCollection extends ArrayList {
 	 * @param Token $token
 	 * @return Unit the found block or null
 	 */
-	public function findBlockByStart(Token $token) {
+	public function findUnitByStart(Token $token) {
 		foreach ($this->collection as $unit) {
 			if ($unit->start === $token) {
 				return $unit;

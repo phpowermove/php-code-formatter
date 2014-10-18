@@ -5,11 +5,11 @@ if ($code == BAD) {
 	$action = KEEP;
 }
 for ($i = 0; $i < 10; $i++) {
-	while ($j > (1 - 1)) {
+	do {
 		$j++;
 		doCall($i + $j);
 		if ($k) {
 			$k /= 10;
 		}
-	}
+	} while ($j > (1 - 1));
 }

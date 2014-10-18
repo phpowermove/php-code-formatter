@@ -1,5 +1,5 @@
 <?php
-namespace gossi\formatter\traverse;
+namespace gossi\formatter\parser;
 
 use gossi\formatter\token\Token;
 use gossi\collection\Stack;
@@ -11,8 +11,11 @@ use gossi\formatter\events\TokenEvent;
 use gossi\formatter\entities\Group;
 use gossi\formatter\events\BlockEvent;
 use gossi\formatter\events\GroupEvent;
+use gossi\collection\ArrayList;
+use gossi\collection\Set;
+use gossi\collection\Map;
 
-class ContextManager implements TokenVisitorInterface {
+class Context implements TokenVisitorInterface {
 	
 	// context constants
 	const CONTEXT_FILE = 'file';
@@ -34,8 +37,8 @@ class ContextManager implements TokenVisitorInterface {
 	// current contexts
 	private $block;
 	private $group;
-	private $isStructBody = false;
-	private $isRoutineBody = false;
+	private $inStructBody = false;
+	private $inRoutineBody = false;
 
 	// stacks
 	private $blockStack;
@@ -47,15 +50,39 @@ class ContextManager implements TokenVisitorInterface {
 	private $blockDetected;
 	private $tracker;
 	private $dispatcher;
+	private $parser;
+	private $matcher;
+	private $events = [
+		self::EVENT_BLOCK_ENTER, self::EVENT_BLOCK_LEAVE, 
+		self::EVENT_GROUP_ENTER, self::EVENT_GROUP_LEAVE,
+		self::EVENT_ROUTINE_ENTER, self::EVENT_ROUTINE_LEAVE,
+		self::EVENT_STRUCT_ENTER, self::EVENT_STRUCT_LEAVE
+	];
 	
-	public function __construct() {
+	private static $PROPERTIES = [T_PRIVATE, T_PUBLIC, T_PROTECTED, T_STATIC, T_VAR];
+	
+	public function __construct(Parser $parser) {
+		$this->parser = $parser;
+		$this->matcher = $parser->getMatcher();
 		$this->blockStack = new Stack();
 		$this->groupStack = new Stack();
 		$this->contextStack = new Stack();
-		$this->semanticBlocks = array_merge(Tokenizer::$STRUCTURAL, 
-				[T_PUBLIC, T_PRIVATE, T_PROTECTED, T_ABSTRACT, T_STATIC, T_VAR]);
-		
 		$this->dispatcher = new EventDispatcher();
+	}
+	
+	public function reset() {
+		// remove listeners
+		foreach ($this->events as $event) {
+			$listeners = $this->dispatcher->getListeners($event);
+			foreach ($listeners as $listener) {
+				$this->dispatcher->removeListener($event, $listener);
+			}
+		}
+
+		// reset data objects
+		$this->blockStack->clear();
+		$this->groupStack->clear();
+		$this->contextStack->clear();
 	}
 	
 	public function setTracker(TokenTracker $tracker) {
@@ -70,7 +97,7 @@ class ContextManager implements TokenVisitorInterface {
 		$this->dispatcher->removeListener($name, $listener);
 	}
 
-	public function visit(Token $token) {
+	public function visitToken(Token $token) {
 		// load current contexts
 		$this->block = $this->peekBlock();
 		$this->group = $this->peekGroup();
@@ -82,8 +109,7 @@ class ContextManager implements TokenVisitorInterface {
 	}
 
 	private function detectBlockContext(Token $token) {
-		if (in_array($token->type, Tokenizer::$BLOCKS)
-				|| in_array($token->type, Tokenizer::$STRUCTURAL)) {
+		if ($this->matcher->isBlock($token)) {
 			$this->blockDetected = $token;
 		}
 
@@ -99,13 +125,14 @@ class ContextManager implements TokenVisitorInterface {
 	}
 	
 	private function enterBlockContext(Token $token) {
-		if ($token->contents == '{') {
+		if ($token->contents == '{' && $this->blockDetected !== null) {
 			$type = Block::getType($this->blockDetected);
 			if ($type == Block::TYPE_FUNCTION && $this->getCurrentContext() == self::CONTEXT_STRUCT) {
 				$type = Block::TYPE_METHOD;
 			}
 			$block = new Block($type);
-			$block->start = $token;
+			$block->start = $this->findBlockStart($this->blockDetected);
+			$block->open = $token;
 			$this->blockStack->push($block);
 			$this->block = $block;
 			$this->blockDetected = null;
@@ -114,15 +141,15 @@ class ContextManager implements TokenVisitorInterface {
 			$this->dispatcher->dispatch(self::EVENT_BLOCK_ENTER, $event);
 
 			// enter struct context
-			if (in_array($block->type, Block::$STRUCTS)) {
-				$this->isStructBody = true;
+			if ($block->isStruct()) {
+				$this->inStructBody = true;
 				$this->dispatcher->dispatch(self::EVENT_STRUCT_ENTER, $event);
 				$this->contextStack->push(self::CONTEXT_STRUCT);
 			}
 
 			// enter routine context
-			else if (in_array($block->type, Block::$ROUTINE)) {
-				$this->isRoutineBody = true;
+			else if ($block->isRoutine()) {
+				$this->inRoutineBody = true;
 				$this->dispatcher->dispatch(self::EVENT_ROUTINE_ENTER, $event);
 				$this->contextStack->push(self::CONTEXT_ROUTINE);
 			}
@@ -133,24 +160,47 @@ class ContextManager implements TokenVisitorInterface {
 			}
 		}
 	}
+	
+	private function findBlockStart(Token $token) {
+		$startToken = $token;
+		$prevToken = $this->tracker->prevToken($token);
+		
+		while ($this->matcher->isModifier($prevToken)) {
+			$startToken = $prevToken;
+			$prevToken = $this->tracker->prevToken($prevToken);
+		}
+		
+		return $startToken;
+	}
 
 	private function leaveBlockContext(Token $token) {
 		if ($token->contents == '}') {
 			$this->block = $this->blockStack->pop();
+			
+			// find block end
+			if ($this->block->type == Block::TYPE_DO) {
+				$nextToken = $token;
+				do {
+					$nextToken = $this->tracker->nextToken($nextToken);
+				} while ($nextToken->contents != ';');
+				$this->block->end = $nextToken;
+			} else {
+				$this->block->end = $token;
+			}
 
 			$event = new BlockEvent($token, $this->block);
 			$this->dispatcher->dispatch(self::EVENT_BLOCK_LEAVE, $event);
 			$this->contextStack->pop();
 			
 			// leave struct context
-			if ($this->isStructBody && in_array($this->block->type, Block::$STRUCTS)) {
-				$this->isStructBody = false;
+			if ($this->inStructBody && $this->block->isStruct()) {
+				$this->inStructBody = false;
 				$this->dispatcher->dispatch(self::EVENT_STRUCT_LEAVE, $event);
 			}
 
 			// leave routine context
-			else if ($this->isRoutineBody && in_array($this->block->type, Block::$ROUTINE)) {
-				$this->isRoutineBody = false;
+			else if ($this->inRoutineBody && $this->block->isRoutine()) {
+				$this->inRoutineBody = false;
 				$this->dispatcher->dispatch(self::EVENT_ROUTINE_LEAVE, $event);
 			}
 		}
@@ -160,33 +210,36 @@ class ContextManager implements TokenVisitorInterface {
 		return $this->blockDetected !== null;
 	}
 	
-	public function isStructBody() {
-		return $this->isStructBody;
+	public function inStructBody() {
+		return $this->inStructBody;
 	}
 	
-	public function isRoutineBody() {
-		return $this->isRoutineBody;
+	public function inRoutineBody() {
+		return $this->inRoutineBody;
 	}
 
 	private function detectGroupContext(Token $token) {
 		$prevToken = $this->tracker->getPrevToken();
 		if ($token->contents == '(') {
-			$this->group = new Group();
-			$this->group->start = $token;
-			if (in_array($prevToken->type, Tokenizer::$BLOCKS)
-					|| in_array($prevToken->type, Tokenizer::$OPERATORS)) {
-				$this->group->type = Group::BLOCK;
-				$this->group->token = $prevToken;
+			$group = new Group();
+			$group->start = $token;
+// 			if (in_array($prevToken->type, Tokenizer::$BLOCKS)
+// 					|| in_array($prevToken->type, Tokenizer::$OPERATORS)) {
+			if (($this->matcher->isBlock($prevToken) || $this->matcher->isOperator($prevToken))
+					&& !$this->group->isBlock()) {
+				$group->type = Group::BLOCK;
+				$group->token = $prevToken;
 			} else if ($this->isFunctionInvocation($token)) {
-				$this->group->type = Group::CALL;
-				$this->group->token = $prevToken;
+				$group->type = Group::CALL;
+				$group->token = $prevToken;
 			} else {
-				$this->group->type = Group::GROUP;
+				$group->type = Group::GROUP;
 			}
 
-			$this->groupStack->push($this->group);
+			$this->groupStack->push($group);
+			$this->group = $group;
 			
-			$event = new GroupEvent($token, $this->group);
+			$event = new GroupEvent($token, $group);
 			$this->dispatcher->dispatch(self::EVENT_GROUP_ENTER, $event);
 		} else if ($token->contents == ')') {
 			$this->group = $this->groupStack->pop();
@@ -203,13 +256,17 @@ class ContextManager implements TokenVisitorInterface {
 	}
 
 	private function detectLineContext(Token $token) {
-		if (in_array($token->contents, Tokenizer::$LINE_CONTEXT)) {
+		if ($this->matcher->isLineContext($token)) {
 			$this->line = $token->contents;
 		}
 	}
 
 	public function resetLineContext() {
 		$this->line = null;
+	}
+	
+	public function getLineContext() {
+		return $this->line;
 	}
 	
 	public function getCurrentContext() {
@@ -242,7 +299,7 @@ class ContextManager implements TokenVisitorInterface {
 		if ($this->blockStack->size() > 0) {
 			return $this->blockStack->peek();
 		}
-		return new Token();
+		return new Block(null);
 	}
 	
 	private function peekGroup() {

@@ -1,5 +1,5 @@
 <?php
-namespace gossi\formatter\traverse;
+namespace gossi\formatter\parser;
 
 use gossi\formatter\token\TokenCollection;
 use gossi\formatter\token\Token;
@@ -13,16 +13,16 @@ class TokenTracker implements TokenVisitorInterface {
 	private $next;
 	private $prev;
 	
-	public function __construct(TokenCollection $tokens, ContextManager $contextManager) {
+	public function __construct(TokenCollection $tokens, Context $contextManager) {
 		$this->tokens = $tokens;
 		$this->context = $contextManager;
 		$this->context->setTracker($this);
 	}
 
-	public function visit(Token $token) {
+	public function visitToken(Token $token) {
 		$this->next = $this->nextToken($token);
 		$this->prev = $this->prevToken($token);
-		$this->context->visit($token);
+		$this->context->visitToken($token);
 	}
 
 	public function getNextToken() {

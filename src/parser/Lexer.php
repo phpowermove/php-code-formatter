@@ -4,6 +4,10 @@ namespace gossi\formatter\parser;
 use gossi\formatter\token\TokenCollection;
 use gossi\formatter\token\Token;
 
+/**
+ * Dunno if this is a lexer...
+ * 
+ */
 class Lexer {
 
 	private $tokens;

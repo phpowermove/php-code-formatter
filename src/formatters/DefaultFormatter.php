@@ -4,20 +4,17 @@ namespace gossi\formatter\formatters;
 use gossi\formatter\token\Token;
 use gossi\formatter\token\TokenCollection;
 use gossi\formatter\config\Config;
-use gossi\formatter\traverse\ContextManager;
-use gossi\formatter\traverse\TokenTracker;
 use gossi\formatter\utils\Writer;
 use gossi\collection\Queue;
 use gossi\formatter\entities\Group;
 
-class DefaultFormatter extends AbstractFormatter {
+class DefaultFormatter extends BaseFormatter {
 	
 	private $preCommands;
-	private $postCommands;
-	
-	public function __construct(TokenCollection $tokens, Config $config, ContextManager $context, TokenTracker $tracker, Writer $writer) {
-		parent::__construct($tokens, $config, $context, $tracker, $writer);
+	private $postCommands;	
+	private $showToken = true;
 
+	protected function init() {
 		$this->preCommands = new Queue();
 		$this->postCommands = new Queue();
 	}
@@ -54,15 +51,16 @@ class DefaultFormatter extends AbstractFormatter {
 		$this->postCommands->enqueue(['outdent']);
 	}
 	
-	public function doVisit(Token $token) {
+	public function hideToken() {
+		$this->showToken = false;
+	}
+	
+	protected function doVisitToken(Token $token) {
 		$group = $this->context->getGroupContext();
 		
 		// pre commands
-		if ($token->contents == 'use') {
-			echo 'pre Commands';
-		}
 		$this->processCommands($this->preCommands);
-		
+
 		// finish line on semicolon
 		if ($token->contents == ';' && $group->type != Group::BLOCK) {
 			$this->context->resetLineContext();
@@ -70,7 +68,7 @@ class DefaultFormatter extends AbstractFormatter {
 		}
 		
 		// when no semicolon and token output allowed
-		else {
+		else if ($this->showToken) {
 			$this->writer->write($token->contents);
 		}
 
@@ -80,6 +78,7 @@ class DefaultFormatter extends AbstractFormatter {
 		// reset
 		$this->preCommands->clear();
 		$this->postCommands->clear();
+		$this->showToken = true;
 	}
 	
 	private function processCommands(Queue $commands) {

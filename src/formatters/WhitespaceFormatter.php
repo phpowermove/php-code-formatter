@@ -3,10 +3,9 @@ namespace gossi\formatter\formatters;
 
 use gossi\formatter\token\Token;
 use gossi\formatter\token\Tokenizer;
-use gossi\formatter\traverse\ContextManager;
 use gossi\formatter\entities\Group;
 
-class WhitespaceFormatter extends AbstractSpecializedFormatter {
+class WhitespaceFormatter extends SpecializedFormatter {
 	
 	private static $BLOCK_CONTEXT_MAPPING = [
 		T_IF => 'ifelse',
@@ -29,7 +28,7 @@ class WhitespaceFormatter extends AbstractSpecializedFormatter {
 		'?' => 'questionmark'
 	];
 	
-	protected function doVisit(Token $token) {
+	protected function doVisitToken(Token $token) {
 		$this->applyKeywords($token);
 		$this->applyAssignments($token);
 		$this->applyOperators($token);
@@ -39,20 +38,20 @@ class WhitespaceFormatter extends AbstractSpecializedFormatter {
 	}
 	
 	private function applyKeywords(Token $token) {
-		if (in_array($token->type, Tokenizer::$KEYWORDS)) {
+		if ($this->matcher->isKeyword($token)) {
 			$this->defaultFormatter->addPostWrite(' ');
 		}
 	}
 	
 	private function applyAssignments(Token $token) {
-		if (in_array($token->contents, Tokenizer::$ASSIGNMENTS)) {
-			$this->whitespaceBeforeAfter($token, 'assignment', 'assignments');
+		if ($this->matcher->isAssignment($token)) {
+			$this->whitespaceBeforeAfter('assignment', 'assignments');
 		}
 	}
 	
 	private function applyOperators(Token $token) {
-		if (in_array($token->contents, Tokenizer::$OPERATORS)) {
-			$this->whitespaceBeforeAfter($token, 'binary', 'operators');
+		if ($this->matcher->isOperator($token)) {
+			$this->whitespaceBeforeAfter('binary', 'operators');
 		}
 	}
 	
@@ -60,12 +59,12 @@ class WhitespaceFormatter extends AbstractSpecializedFormatter {
 		if ($token->type == T_INC || $token->type == T_DEC) {
 			// pre
 			if ($this->nextToken->type == T_VAR) {
-				$this->whitespaceBeforeAfter($token, 'prefix', 'operators');
+				$this->whitespaceBeforeAfter('prefix', 'operators');
 			}
 		
 			// post
 			else if ($this->prevToken->type == T_VAR) {
-				$this->whitespaceBeforeAfter($token, 'postfix', 'operators');
+				$this->whitespaceBeforeAfter('postfix', 'operators');
 			}
 		}
 	}
@@ -91,7 +90,7 @@ class WhitespaceFormatter extends AbstractSpecializedFormatter {
 			
 			// anyway find context and apply it
 			$context = $this->findContext($token);
-			$this->whitespaceBeforeAfter($token, $key, $context);
+			$this->whitespaceBeforeAfter($key, $context);
 		}
 	}
 	
@@ -100,8 +99,9 @@ class WhitespaceFormatter extends AbstractSpecializedFormatter {
 		$context = 'default';
 		
 		// first check the context of the current line
-		if (!empty($this->line)) {
-			$context = $this->line;
+		$line = $this->context->getLineContext();
+		if (!empty($line)) {
+			$context = $line;
 		}
 		
 		// is it a parens group?
@@ -128,7 +128,7 @@ class WhitespaceFormatter extends AbstractSpecializedFormatter {
 		return $context;
 	}
 
-	private function whitespaceBeforeAfter(Token $token, $key, $context = 'default') {
+	private function whitespaceBeforeAfter($key, $context = 'default') {
 		if ($this->config->getWhitespace('before_' . $key, $context)) {
 			$this->defaultFormatter->addPreWrite(' ');
 		}

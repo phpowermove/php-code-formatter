@@ -3,9 +3,9 @@ namespace gossi\formatter\formatters;
 
 use gossi\formatter\token\Token;
 
-class CommentsFormatter extends AbstractSpecializedFormatter {
+class CommentsFormatter extends SpecializedFormatter {
 	
-	protected function doVisit(Token $token) {
+	protected function doVisitToken(Token $token) {
 		// multiline
 		if ($token->type == T_DOC_COMMENT
 				|| $token->type == T_INLINE_HTML && strpos($token->contents, '/*') !== 0) {

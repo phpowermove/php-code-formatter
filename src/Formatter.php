@@ -6,6 +6,7 @@ use gossi\formatter\config\Config;
 use gossi\formatter\formatters\DelegateFormatter;
 use gossi\formatter\parser\Lexer;
 use gossi\formatter\parser\Analyzer;
+use gossi\formatter\parser\Parser;
 
 class Formatter {
 
@@ -16,26 +17,15 @@ class Formatter {
 	}
 
 	public function format($code) {
-		// get tokens
-		$tokenizer = new Tokenizer();
-		$tokens = $tokenizer->tokenize($code);
-		
-		// preparations
-		$lexer = new Lexer();
-		$tokens = $lexer->fix($tokens);
-		$tokens = $lexer->filterTokens($tokens);
-		
-		$analyzer = new Analyzer($tokens);
-		$analyzer->analyze();
+		$parser = new Parser();
+		$parser->parse($code);
 
 		// formatting
-		$visitor = new DelegateFormatter($tokens, $this->config, $analyzer);
-		foreach ($tokens as $token) {
-			$token->accept($visitor);
-		}
+		$delegate = new DelegateFormatter($parser, $this->config);
+		$delegate->format();
 		
 		// post processing
 		
-		return $visitor->getCode();
+		return $delegate->getCode();
 	}
 }

@@ -3,9 +3,9 @@ namespace gossi\formatter\formatters;
 
 use gossi\formatter\token\Token;
 
-class IndentationFormatter extends AbstractSpecializedFormatter {
+class IndentationFormatter extends SpecializedFormatter {
 	
-	protected function doVisit(Token $token) {
+	protected function doVisitToken(Token $token) {
 		$this->indentOpenCurlyBrace($token);
 		$this->indentCloseCurlyBrace($token);
 	}

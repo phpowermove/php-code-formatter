@@ -23,9 +23,9 @@ trait SamplesTrait {
 	
 		// default coding style
 		$code = $formatter->format($raw);
-		if ($sample == 'class') {
-			echo $code;
-		}
+// 		if ($sample == 'class') {
+// 			echo $code;
+// 		}
 		$this->assertEquals($this->getDefaultContent($sample), $code);
 	
 		// psr2 coding style

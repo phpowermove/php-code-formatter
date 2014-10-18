@@ -1,134 +1,163 @@
 <?php
 namespace gossi\formatter\parser;
 
-use gossi\formatter\traverse\TokenTracker;
-use gossi\formatter\traverse\ContextManager;
 use gossi\formatter\token\Token;
 use gossi\formatter\token\TokenCollection;
 use gossi\formatter\formatters\CommentsFormatter;
-
 use gossi\formatter\entities\Unit;
 use gossi\formatter\collections\UnitCollection;
+use gossi\formatter\events\BlockEvent;
+use gossi\formatter\entities\Block;
 
 class Analyzer {
-
-	private static $PROPERTIES = [T_PRIVATE, T_PUBLIC, T_PROTECTED, T_STATIC, T_VAR];
-	private static $IDENTIFIER = [T_CONST, T_NAMESPACE, T_USE];
-	private static $TYPES_MAP = [
-		T_CONST => Unit::UNIT_CONSTANTS,
-		T_NAMESPACE => Unit::UNIT_NAMESPACE,
-		T_USE => Unit::UNIT_USE
-	];
-
-	/** @var ContextManager */
-	private $context;
-	/** @var TokenTracker */
-	private $tracker;
 	
-	private $detectedBlock = null;
-	private $detectedBlockType = null;
-	private $currentBlock = null;
-	private $blocks;
+	/** @var Parser */
+	private $parser;
+	private $matcher;
+	
+	private $detectedUnit = null;
+	private $detectedUnitType = null;
+	private $currentUnit = null;
+	private $units;
 
-	public function __construct(TokenCollection $tokens) {
-		$this->tokens = $tokens;
-		$this->context = new ContextManager();
-		$this->tracker = new TokenTracker($tokens, $this->context);
-		$this->blocks = new UnitCollection();
+	public function __construct(Parser $parser) {
+		$this->parser = $parser;
+		$this->matcher = $parser->getMatcher();
+		$this->units = new UnitCollection();
+		
+		// register listeners
+		$context = $parser->getContext();
+		$context->addListener(Context::EVENT_ROUTINE_LEAVE, [$this, 'onRoutineClosed']);
+		$context->addListener(Context::EVENT_BLOCK_LEAVE, [$this, 'onBlockClosed']);
 	}
 	
-	public function getBlocks() {
-		return $this->blocks;
+	public function getUnits() {
+		return $this->units;
 	}
 
-	public function analyze() {
-		foreach ($this->tokens as $token) {
-			$this->tracker->visit($token);
-			$this->findBlockStart($token);
-			$this->findBlockEnd($token);
+	public function analyze(TokenCollection $tokens) {
+		foreach ($tokens as $token) {
+			$this->parser->getTracker()->visitToken($token);
+			$this->findUnitStart($token);
+			$this->findUnitEnd($token);
 			$this->finish($token);
 		}
 	}
 
-	private function findBlockStart(Token $token) {
-		$detectedBlock = null;
-		$detectedBlockType = null;
+	private function findUnitStart(Token $token) {
+		$detectedUnit = null;
+		$detectedUnitType = null;
 
-		if ($this->detectedBlock === null && (in_array($token->type, self::$PROPERTIES)
-				|| in_array($token->type, self::$IDENTIFIER))) {
-			$detectedBlock = $token;
+		if ($this->detectedUnit === null && ($this->matcher->isModifier($token)
+				|| $this->matcher->isUnitIdentifier($token))) {
+			$detectedUnit = $token;
 		}
 		
-		if ($detectedBlock !== null) {
+		if ($detectedUnit !== null) {
 			
 			// traits = use statements in struct body
-			if ($token->type == T_USE && $this->context->isStructBody()) {
-				$detectedBlockType = Unit::UNIT_TRAITS;
+			if ($token->type == T_USE && $this->parser->getContext()->getCurrentContext() == Context::CONTEXT_STRUCT) {
+				$detectedUnitType = Unit::UNIT_TRAITS;
 			}
 			
 			// line statements
-			else if (in_array($token->type, self::$IDENTIFIER)) {
-				$detectedBlockType = self::$TYPES_MAP[$token->type];
+			else if ($this->matcher->isUnitIdentifier($token)) {
+				$detectedUnitType = Unit::getType($token);
 			}
 			
 			// check for properties
-			else if (in_array($token->type, self::$PROPERTIES)) {
+			else if ($this->matcher->isModifier($token)) {
 				$nextToken = $token;
 				do {
-					$nextToken = $this->tracker->nextToken($nextToken);
+					$nextToken = $this->parser->getTracker()->nextToken($nextToken);
 					if ($nextToken !== null && $nextToken->type == T_VARIABLE) {
-						$detectedBlockType = Unit::UNIT_FIELDS;
+						$detectedUnitType = Unit::UNIT_FIELDS;
 						break;
 					} else if ($nextToken !== null && $nextToken->type == T_FUNCTION) {
-						$detectedBlockType = Unit::UNIT_METHODS;
+						$detectedUnitType = Unit::UNIT_METHODS;
 						break;
+					} else if ($nextToken !== null && $nextToken->type == T_CLASS) {
+						return;
 					}
-				} while (in_array($nextToken->type, self::$PROPERTIES));
+				} while ($this->matcher->isModifier($nextToken));
 			}
 
-			// continue last block, or start new block?
-			if ($this->currentBlock !== null && $detectedBlockType === $this->currentBlock->type) {
+			// continue last unit, or start new unit?
+			if ($detectedUnitType !== Unit::UNIT_METHODS 
+					&& $this->currentUnit !== null 
+					&& $detectedUnitType === $this->currentUnit->type) {
 				$prevToken = $token;
 				do {
-					$prevToken = $this->tracker->prevToken($prevToken); 
-				} while (CommentsFormatter::isComment($prevToken));
-					
-				// yes, new block
-				if ($prevToken !== $this->currentBlock->end) {
-					$this->dumpCurrentBlock();
+					$prevToken = $this->parser->getTracker()->prevToken($prevToken); 
+				} while (CommentsFormatter::isComment($prevToken) 
+						|| $this->matcher->isModifier($prevToken));
+
+				// yes, new unit
+				if ($prevToken !== $this->currentUnit->end) {
+					$this->dumpCurrentUnit();
+					$this->detectedUnit = $detectedUnit;
+					$this->detectedUnitType = $detectedUnitType;
 				}
 			} else {
-				$this->dumpCurrentBlock();
-				$this->detectedBlock = $detectedBlock;
-				$this->detectedBlockType = $detectedBlockType;
+				$this->dumpCurrentUnit();
+				$this->detectedUnit = $detectedUnit;
+				$this->detectedUnitType = $detectedUnitType;
 			}
 		}
 	}
 
-	private function findBlockEnd(Token $token) {
-		if ($this->detectedBlock !== null) {
-			if ($token->contents == ';' || $token->contents == '}') {
-				$this->currentBlock = new Unit();
-				$this->currentBlock->start = $this->detectedBlock;
-				$this->currentBlock->type = $this->detectedBlockType;
-				$this->currentBlock->end = $token;
-
-				$this->detectedBlock = null;
-				$this->detectedBlockType = null;
+	private function findUnitEnd(Token $token) {
+		if ($this->detectedUnit !== null) {
+			if ($token->contents == ';') {
+				$this->flushDetection($token);
 			}
+		}
+	}
+	
+	private function flushDetection(Token $token) {
+		$this->currentUnit = new Unit();
+		$this->currentUnit->start = $this->detectedUnit;
+		$this->currentUnit->type = $this->detectedUnitType;
+		$this->currentUnit->end = $token;
+
+		$this->detectedUnit = null;
+		$this->detectedUnitType = null;
+	}
+	
+	public function onRoutineClosed(BlockEvent $event) {
+		if ($this->parser->getContext()->getCurrentContext() == Context::CONTEXT_STRUCT) {
+
+			$block = $event->getBlock();
+			
+			if ($this->currentUnit === null || $block->start != $this->currentUnit->start) {
+				$this->detectedUnit = $block->start;
+				$this->detectedUnitType = Unit::UNIT_METHODS;
+				$this->flushDetection($event->getToken());
+			} 
+			
+			$this->dumpCurrentUnit();
+		}
+	}
+	
+	public function onBlockClosed(BlockEvent $event) {
+		$block = $event->getBlock();
+		if ($block->type == Block::TYPE_USE || $block->type == Block::TYPE_NAMESPACE) {
+			$this->detectedUnit = $block->start;
+			$this->detectedUnitType = $block->type;
+			$this->flushDetection($event->getToken());
 		}
 	}
 	
 	private function finish(Token $token) {
-		if ($this->tracker->isLastToken($token)) {
-			$this->dumpCurrentBlock();
+		if ($this->parser->getTracker()->isLastToken($token)) {
+			$this->dumpCurrentUnit();
 		}
 	}
 	
-	private function dumpCurrentBlock() {
-		if ($this->currentBlock !== null) {
-			$this->blocks->add($this->currentBlock);
-			$this->currentBlock = null;
+	private function dumpCurrentUnit() {
+		if ($this->currentUnit !== null) {
+			$this->units->add($this->currentUnit);
+			$this->currentUnit = null;
 		}
 	}
 

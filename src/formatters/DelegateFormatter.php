@@ -9,6 +9,7 @@ use gossi\formatter\utils\Writer;
 use gossi\formatter\token\Token;
 use gossi\formatter\token\TokenVisitorInterface;
 use gossi\formatter\parser\Analyzer;
+use gossi\formatter\parser\Parser;
 
 class DelegateFormatter implements TokenVisitorInterface {
 	
@@ -30,35 +31,39 @@ class DelegateFormatter implements TokenVisitorInterface {
 	private $whitespaceFormatter;
 	private $blanksFormatter;
 	
-	public function __construct(TokenCollection $tokens, Config $config, Analyzer $analyzer) {
+	public function __construct(Parser $parser, Config $config) {
 		$this->config = $config;
-		$this->tokens = $tokens;
-		$this->context = new ContextManager();
-		$this->tracker = new TokenTracker($tokens, $this->context);
+		$this->parser = $parser;
 		$this->writer = new Writer([
 			'indentation_character' => $config->getIndentation('character') == 'tab' ? "\t" : ' ',
 			'indentation_size' => $config->getIndentation('size')
 		]);
 
 		// define rules
-		$this->defaultFormatter = new DefaultFormatter($tokens, $config, $this->context, $this->tracker, $this->writer);
-		$this->commentsFormatter = new CommentsFormatter($tokens, $config, $this->context, $this->tracker, $this->writer, $this->defaultFormatter);
-		$this->indentationFormatter = new IndentationFormatter($tokens, $config, $this->context, $this->tracker, $this->writer, $this->defaultFormatter);
-		$this->newlineFormatter = new NewlineFormatter($tokens, $config, $this->context, $this->tracker, $this->writer, $this->defaultFormatter);
-		$this->whitespaceFormatter = new WhitespaceFormatter($tokens, $config, $this->context, $this->tracker, $this->writer, $this->defaultFormatter);
-		$this->blanksFormatter = new BlanksFormatter($tokens, $config, $this->context, $this->tracker, $this->writer, $this->defaultFormatter, $analyzer);
+		$this->defaultFormatter = new DefaultFormatter($parser, $config, $this->writer);
+		$this->commentsFormatter = new CommentsFormatter($parser, $config, $this->writer, $this->defaultFormatter);
+		$this->indentationFormatter = new IndentationFormatter($parser, $config, $this->writer, $this->defaultFormatter);
+		$this->newlineFormatter = new NewlineFormatter($parser, $config, $this->writer, $this->defaultFormatter);
+		$this->whitespaceFormatter = new WhitespaceFormatter($parser, $config, $this->writer, $this->defaultFormatter);
+		$this->blanksFormatter = new BlanksFormatter($parser, $config, $this->writer, $this->defaultFormatter);
 	}
 	
-	public function visit(Token $token) {
-		$this->tracker->visit($token);
+	public function format() {
+		foreach ($this->parser->getTokens() as $token) {
+			$token->accept($this);
+		}
+	}
+	
+	public function visitToken(Token $token) {
+		$this->parser->getTracker()->visitToken($token);
 		
 		// visit all rules
-		$this->commentsFormatter->visit($token);
-		$this->indentationFormatter->visit($token);
-		$this->newlineFormatter->visit($token);
-		$this->whitespaceFormatter->visit($token);
-// 		$this->blanksFormatter->visit($token);
-		$this->defaultFormatter->visit($token);
+		$this->commentsFormatter->visitToken($token);
+		$this->indentationFormatter->visitToken($token);
+		$this->newlineFormatter->visitToken($token);
+		$this->whitespaceFormatter->visitToken($token);
+		$this->blanksFormatter->visitToken($token);
+		$this->defaultFormatter->visitToken($token);
 	}
 	
 	public function getCode() {

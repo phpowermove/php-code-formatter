@@ -1,6 +1,8 @@
 <?php
 namespace gossi\formatter\entities;
 
+use gossi\formatter\token\Token;
+
 class Group {
 
 	const BLOCK = 'block';
@@ -17,4 +19,16 @@ class Group {
 	public $token = null;
 
 	public $type = '';
+	
+	public function isBlock() {
+		return $this->type == self::BLOCK;
+	}
+	
+	public function isCall() {
+		return $this->type == self::CALL;
+	}
+	
+	public function isGroup() {
+		return $this->type == self::GROUP;
+	}
 }

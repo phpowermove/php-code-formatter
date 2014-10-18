@@ -48,10 +48,11 @@ class Block {
 		T_CATCH => Block::TYPE_CATCH,
 	];
 	
-	public static $STRUCTS = [self::TYPE_CLASS, self::TYPE_TRAIT, self::TYPE_INTERFACE];
-	public static $ROUTINE = [self::TYPE_FUNCTION, self::TYPE_METHOD];
-	public static $BLOCKS = [self::TYPE_IF, self::TYPE_ELSEIF, self::TYPE_ELSE, self::TYPE_DO, self::TYPE_WHILE, 
-		self::TYPE_FOR, self::TYPE_FOREACH, self::TYPE_SWITCH, self::TYPE_USE, self::TYPE_NAMESPACE];
+	private static $STRUCTS = [self::TYPE_CLASS, self::TYPE_TRAIT, self::TYPE_INTERFACE];
+	private static $ROUTINE = [self::TYPE_FUNCTION, self::TYPE_METHOD];
+	private static $BLOCKS = [self::TYPE_IF, self::TYPE_ELSEIF, self::TYPE_ELSE, self::TYPE_DO, 
+		self::TYPE_WHILE, self::TYPE_FOR, self::TYPE_FOREACH, self::TYPE_SWITCH, self::TYPE_USE, 
+			self::TYPE_NAMESPACE];
 	
 	/** 
 	 * The opening curly brace
@@ -70,9 +71,16 @@ class Block {
 	/**
 	 * Start is the initial token of that block
 	 *  
-	 * @var Token 
+	 * @var Token
 	 */
 	public $start = null;
+	
+	/**
+	 * Start is the last token of that block
+	 *
+	 * @var Token
+	 */
+	public $end = null;
 	
 	public $type = '';
 	
@@ -80,9 +88,21 @@ class Block {
 		$this->type = $type;
 	}
 	
+	public function isStruct() {
+		return in_array($this->type, self::$STRUCTS);
+	}
+	
+	public function isRoutine() {
+		return in_array($this->type, self::$ROUTINE);
+	}
+	
+	public function isBlock() {
+		return in_array($this->type, self::$BLOCKS);
+	}
+	
 	public static function getType(Token $token) {
-		if (isset(static::$typeMap[$token->type])) {
-			return static::$typeMap[$token->type];
+		if (isset(self::$typeMap[$token->type])) {
+			return self::$typeMap[$token->type];
 		} else if ($token->contents == 'finally') {
 			return self::TYPE_FINALLY;
 		}
