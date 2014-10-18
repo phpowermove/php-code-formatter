@@ -3,27 +3,25 @@ namespace gossi\formatter\formatters;
 
 use gossi\formatter\token\TokenCollection;
 use gossi\formatter\config\Config;
-use gossi\formatter\traverse\ContextManager;
-use gossi\formatter\traverse\TokenTracker;
 use gossi\formatter\utils\Writer;
 use gossi\formatter\token\Token;
 use gossi\formatter\token\TokenVisitorInterface;
 use gossi\formatter\parser\Analyzer;
 use gossi\formatter\parser\Parser;
+use gossi\formatter\parser\Context;
 
 class DelegateFormatter implements TokenVisitorInterface {
-	
-	/** @var TokenCollection */
-	protected $tokens;
-	/** @var TokenTracker */
-	protected $tracker;
+
 	/** @var Config */
 	protected $config;
 	/** @var Writer */
 	protected $writer;
-	/** @var ContextManager */
+	/** @var Context */
 	protected $context;
+	/** @var Parser */
+	protected $parser;
 	
+	// formatters
 	private $defaultFormatter;
 	private $commentsFormatter;
 	private $indentationFormatter;

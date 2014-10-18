@@ -4,91 +4,48 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gossi/php-code-formatter/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/gossi/php-code-formatter/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/gossi/php-code-formatter/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/gossi/php-code-formatter/?branch=master)
 
-A code formatting library for php code.
+A library for formatting php code.
 
 
 ## Features
 
 - Whitespace
 - New lines
-- Indentation (on curly braces)
+- Indentation (on curly braces only)
+- Blanks (partial support)
 
-## Wishlist
+-> [Wishlist](https://github.com/gossi/php-code-formatter/labels/feature-request)
 
-- Blank lines
-- Smart Indentation for conditions
-- Indentation for chaining methods (some symfony libs and propel generated methods)
-- Array Indentation
-- Run through CLI
+## Getting started
 
+### Installation
 
-## Developer Docs
+Via composer:
 
-### Definitions
-
-#### Entity: Block
-
-A block is everything between curly braces.
-
-##### Struct
-
-Abstract word that defines `class`, `trait` and `interface`.
-
-##### Routine
-
-Which is either a function or method.
-
-##### Block
-
-Everything between curly braces which is neither a Struct or Routine, something like loops, conditions, etc. (but also use blocks).
-
-#### Entity: Group
-
-A group is everything between parens.
-
-##### Block
-
-When a group belongs to a block, such as the conditions for an if-clause or a while statement.
-
-##### Call
-
-Whenever a function or method is invocated, this will be the respective context
-
-Example:
-
-```
-$foo->bar($baz);
+```json
+"require": {
+    "gossi/php-code-formatter": "dev-master"
+}
 ```
 
-##### Group
+### From Code
 
-Everything else, that is grouped within parens. 
+This simple code snippet is all you need:
 
-Example: 
+```php
+use gossi\formatter\Formatter;
 
-```
-$a = $b * ($c + 5);
-```
-
-#### Entity: Unit
-
-Units are collective statements of a specific type. 
-
-Example:
-
-```
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
+$formatter = new Formatter();
+$beautifulCode = $formatter->format($uglyCode);
 ```
 
-### ContextManager
+### From CLI
 
-The context manager helps you traversing the tokens and keeping track of entering or leaving a block, group and line contexts. Helpful methods:
+Not yet, see [#2](https://github.com/gossi/php-code-formatter/issues/2)
 
-```
-$context->getCurrentContext(); // file, struct, routine, block, group
-```
+## Development
 
+php code formatter is not yet finished (see [Wishlist](https://github.com/gossi/php-code-formatter/labels/feature-request)). Please help the development, by picking one of the open issues or implement your own rules. See the wiki on [creating your own rules](https://github.com/gossi/php-code-formatter/wiki/creating-your-own-Rules).
 
-
+Psr-2? Spaces suck, deal with it :p Once [Version 1.0](https://github.com/gossi/php-code-formatter/milestones/Version%201.0) is reached, a psr-2 profile will be shipped.
 

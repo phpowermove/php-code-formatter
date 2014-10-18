@@ -12,7 +12,7 @@ class Parser {
 	private $lexer;
 	/** @var Analyzer */
 	private $analyzer;
-	/** @var ContextManager */
+	/** @var Context */
 	private $context;
 	/** @var TokenTracker */
 	private $tracker;
@@ -62,7 +62,7 @@ class Parser {
 	}
 
 	/**
-	 * @return ContextManager
+	 * @return Context
 	 */
 	public function getContext() {
 		return $this->context;

@@ -4,8 +4,6 @@ namespace gossi\formatter;
 use gossi\formatter\token\Tokenizer;
 use gossi\formatter\config\Config;
 use gossi\formatter\formatters\DelegateFormatter;
-use gossi\formatter\parser\Lexer;
-use gossi\formatter\parser\Analyzer;
 use gossi\formatter\parser\Parser;
 
 class Formatter {

@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "gossi/collection",
-            "version": "v1.0",
+            "version": "v1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gossi/collection.git",
-                "reference": "e358ddc48e676f30fd4d21ec7c6b8551f4aefd64"
+                "reference": "35e0d3caf381e8159efd72275e00f85d5f76e312"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gossi/collection/zipball/e358ddc48e676f30fd4d21ec7c6b8551f4aefd64",
-                "reference": "e358ddc48e676f30fd4d21ec7c6b8551f4aefd64",
+                "url": "https://api.github.com/repos/gossi/collection/zipball/35e0d3caf381e8159efd72275e00f85d5f76e312",
+                "reference": "35e0d3caf381e8159efd72275e00f85d5f76e312",
                 "shasum": ""
             },
             "require": {
@@ -46,7 +46,7 @@
                 "set",
                 "stack"
             ],
-            "time": "2014-09-24 21:42:44"
+            "time": "2014-10-18 21:12:11"
         },
         {
             "name": "symfony/config",
@@ -552,16 +552,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.3.2",
+            "version": "4.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "02dd047049564f98f796789ec4207ee8f99bc3d4"
+                "reference": "5a0bc4dcbb7340c0a9a9bc3507854a67c564edc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/02dd047049564f98f796789ec4207ee8f99bc3d4",
-                "reference": "02dd047049564f98f796789ec4207ee8f99bc3d4",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/5a0bc4dcbb7340c0a9a9bc3507854a67c564edc4",
+                "reference": "5a0bc4dcbb7340c0a9a9bc3507854a67c564edc4",
                 "shasum": ""
             },
             "require": {
@@ -622,7 +622,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2014-10-16 08:01:00"
+            "time": "2014-10-16 16:53:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",

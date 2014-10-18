@@ -210,10 +210,21 @@ class Context implements TokenVisitorInterface {
 		return $this->blockDetected !== null;
 	}
 	
+	/**
+	 * Tells you, whenever being in a struct, this is also true when inside 
+	 * a method or inside a function, which is inside a method
+	 * 
+	 * @return boolean
+	 */
 	public function inStructBody() {
 		return $this->inStructBody;
 	}
 	
+	/**
+	 * Tells you, whenever being in a function or method
+	 * 
+	 * @return boolean
+	 */
 	public function inRoutineBody() {
 		return $this->inRoutineBody;
 	}
@@ -264,11 +275,21 @@ class Context implements TokenVisitorInterface {
 	public function resetLineContext() {
 		$this->line = null;
 	}
-	
+
+	/**
+	 * Returns the line context or null if not present
+	 * 
+	 * @return string|null
+	 */
 	public function getLineContext() {
 		return $this->line;
 	}
 	
+	/**
+	 * Returns the current context. Context is one of the Context::CONTEXT_* constants.
+	 * 
+	 * @return string
+	 */
 	public function getCurrentContext() {
 		if ($this->contextStack->size() > 0) {
 			return $this->contextStack->peek();

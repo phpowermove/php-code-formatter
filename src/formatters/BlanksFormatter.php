@@ -26,24 +26,24 @@ class BlanksFormatter extends SpecializedFormatter {
 
 		if ($unit !== null) {
 			$this->currentUnit = $unit;
-			$this->blankBefore($token, $unit->type);
+			$this->blankBefore($unit->type);
 		}
 	}
-	
+
 	private function unitEnd(Token $token) {
 		if ($this->currentUnit !== null && $this->currentUnit->end === $token) {
-			$this->blankAfter($token, $this->currentUnit->type);
+			$this->blankAfter($this->currentUnit->type);
 			$this->currentUnit = null;
 		}
 	}
 	
-	private function blankBefore(Token $token, $key) {
+	private function blankBefore($key) {
 		for ($i = 0, $count = $this->config->getBlanks('before_' . $key); $i < $count; $i++) {
 			$this->defaultFormatter->addPreWriteln();
 		}
 	}
 	
-	private function blankAfter(Token $token, $key) {
+	private function blankAfter($key) {
 	for ($i = 0, $count = $this->config->getBlanks('after_' . $key); $i < $count; $i++) {
 			$this->defaultFormatter->addPostWriteln();
 		}
