@@ -22,9 +22,9 @@ class Config {
 		$isBuiltin = in_array($profile, $builtIns);
 		
 		if ($isBuiltin) {
-			$profiles[] = $loader->load($locator->locate($profile . '.yml', null, true));
+			$profiles[] = $loader->load(file_get_contents($locator->locate($profile . '.yml', null, true)));
 		} else {
-			$profiles[] = $loader->load($locator->locate('default.yml', null, true));
+			$profiles[] = $loader->load(file_get_contents($locator->locate('default.yml', null, true)));
 		}
 
 		if (!empty($profile) && !$isBuiltin && file_exists($profile)) {
