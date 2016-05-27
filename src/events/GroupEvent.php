@@ -23,4 +23,7 @@ class GroupEvent extends TokenEvent {
 		return $this->group;
 	}
 
+	public function getName() {
+		return 'context.group_' . (is_null($this->group->end) ? 'enter' : 'leave');
+	}
 }
