@@ -4,10 +4,10 @@ namespace gossi\formatter\parser;
 use phootwork\tokenizer\PhpTokenizer;
 
 class Parser {
-	
+
 	/** @var Tokenizer */
 	private $tokenizer;
-	/** @var Lexer */	
+	/** @var Lexer */
 	private $lexer;
 	/** @var Analyzer */
 	private $analyzer;
@@ -27,19 +27,19 @@ class Parser {
 		$this->context = new Context($this);
 		$this->analyzer = new Analyzer($this);
 	}
-	
+
 	public function parse($code) {
 		// get tokens
 		$tokens = $this->tokenizer->tokenize($code);
-		
+
 		// preparations
 		$tokens = $this->lexer->filterTokens($tokens);
 		$tokens = $this->lexer->repair($tokens);
-		
+
 		// helpers
 		$this->tracker = new TokenTracker($tokens, $this->context);
 		$this->tokens = $tokens;
-		
+
 		// analyze
 		$this->analyzer->analyze($tokens);
 		$this->context->reset();
@@ -73,12 +73,12 @@ class Parser {
 	public function getAnalyzer() {
 		return $this->analyzer;
 	}
-	
+
 	/**
 	 * @return TokenMatcher
 	 */
 	public function getMatcher() {
 		return $this->matcher;
 	}
-	
+
 }

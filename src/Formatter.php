@@ -22,7 +22,7 @@ class Formatter {
 		$delegate->format();
 
 		// post processing
-		
+
 		return $delegate->getCode();
 	}
 }

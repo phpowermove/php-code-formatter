@@ -18,7 +18,7 @@ class DelegateFormatter implements TokenVisitorInterface {
 	protected $context;
 	/** @var Parser */
 	protected $parser;
-	
+
 	// formatters
 	private $defaultFormatter;
 	private $commentsFormatter;
@@ -26,7 +26,7 @@ class DelegateFormatter implements TokenVisitorInterface {
 	private $newlineFormatter;
 	private $whitespaceFormatter;
 	private $blanksFormatter;
-	
+
 	public function __construct(Parser $parser, Config $config) {
 		$this->config = $config;
 		$this->parser = $parser;
@@ -43,16 +43,16 @@ class DelegateFormatter implements TokenVisitorInterface {
 		$this->whitespaceFormatter = new WhitespaceFormatter($parser, $config, $this->writer, $this->defaultFormatter);
 		$this->blanksFormatter = new BlanksFormatter($parser, $config, $this->writer, $this->defaultFormatter);
 	}
-	
+
 	public function format() {
 		foreach ($this->parser->getTokens() as $token) {
 			$token->accept($this);
 		}
 	}
-	
+
 	public function visitToken(Token $token) {
 		$this->parser->getTracker()->visitToken($token);
-		
+
 		// visit all rules
 		$this->commentsFormatter->visitToken($token);
 		$this->indentationFormatter->visitToken($token);
@@ -61,7 +61,7 @@ class DelegateFormatter implements TokenVisitorInterface {
 		$this->blanksFormatter->visitToken($token);
 		$this->defaultFormatter->visitToken($token);
 	}
-	
+
 	public function getCode() {
 		return $this->writer->getContent();
 	}

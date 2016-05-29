@@ -2,16 +2,16 @@
 
 namespace gossi\formatter\config;
 
-use Symfony\Component\Config\Definition\ConfigurationInterface;
-use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class ProfileDefinition implements ConfigurationInterface {
 
 	public function getConfigTreeBuilder() {
 		$treeBuilder = new TreeBuilder();
 		$rootNode = $treeBuilder->root('formatter');
-		
+
 		$this->addIndentationSection($rootNode);
 		$this->addBracesSection($rootNode);
 		$this->addWhitespaceSection($rootNode);
@@ -20,7 +20,7 @@ class ProfileDefinition implements ConfigurationInterface {
 
 		return $treeBuilder;
 	}
-	
+
 	private function addIndentationSection(ArrayNodeDefinition $node) {
 		$node
 			->children()
@@ -42,7 +42,7 @@ class ProfileDefinition implements ConfigurationInterface {
 			->end()
 		;
 	}
-	
+
 	private function addBracesSection(ArrayNodeDefinition $node) {
 		$node
 			->children()
@@ -62,7 +62,7 @@ class ProfileDefinition implements ConfigurationInterface {
 			->end()
 		;
 	}
-	
+
 	private function addWhitespaceSection(ArrayNodeDefinition $node) {
 		$node
 			->children()
@@ -85,7 +85,7 @@ class ProfileDefinition implements ConfigurationInterface {
 								->booleanNode('after_doublecolon')->end()
 							->end()
 						->end()
-						
+
 						->arrayNode('struct')
 							->children()
 								->booleanNode('before_curly')->defaultValue('default')->end()
@@ -261,7 +261,7 @@ class ProfileDefinition implements ConfigurationInterface {
 			->end()
 		;
 	}
-	
+
 	private function addNewlinesSection(ArrayNodeDefinition $node) {
 		$node
 			->children()
@@ -276,7 +276,7 @@ class ProfileDefinition implements ConfigurationInterface {
 			->end()
 		;
 	}
-	
+
 	private function addBlanksSection(ArrayNodeDefinition $node) {
 		$node
 			->children()

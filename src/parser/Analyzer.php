@@ -1,20 +1,20 @@
 <?php
 namespace gossi\formatter\parser;
 
-use gossi\formatter\formatters\CommentsFormatter;
-use gossi\formatter\entities\Unit;
 use gossi\formatter\collections\UnitCollection;
-use gossi\formatter\events\BlockEvent;
 use gossi\formatter\entities\Block;
-use phootwork\tokenizer\TokenCollection;
+use gossi\formatter\entities\Unit;
+use gossi\formatter\events\BlockEvent;
+use gossi\formatter\formatters\CommentsFormatter;
 use phootwork\tokenizer\Token;
+use phootwork\tokenizer\TokenCollection;
 
 class Analyzer {
-	
+
 	/** @var Parser */
 	private $parser;
 	private $matcher;
-	
+
 	private $detectedUnit = null;
 	private $detectedUnitType = null;
 	private $currentUnit = null;
@@ -24,13 +24,13 @@ class Analyzer {
 		$this->parser = $parser;
 		$this->matcher = $parser->getMatcher();
 		$this->units = new UnitCollection();
-		
+
 		// register listeners
 		$context = $parser->getContext();
 		$context->addListener(Context::EVENT_ROUTINE_LEAVE, [$this, 'onRoutineClosed']);
 		$context->addListener(Context::EVENT_BLOCK_LEAVE, [$this, 'onBlockClosed']);
 	}
-	
+
 	public function getUnits() {
 		return $this->units;
 	}
@@ -52,19 +52,19 @@ class Analyzer {
 				|| $this->matcher->isUnitIdentifier($token))) {
 			$detectedUnit = $token;
 		}
-		
+
 		if ($detectedUnit !== null) {
-			
+
 			// traits = use statements in struct body
 			if ($token->type == T_USE && $this->parser->getContext()->getCurrentContext() == Context::CONTEXT_STRUCT) {
 				$detectedUnitType = Unit::UNIT_TRAITS;
 			}
-			
+
 			// line statements
 			else if ($this->matcher->isUnitIdentifier($token)) {
 				$detectedUnitType = Unit::getType($token);
 			}
-			
+
 			// check for properties
 			else if ($this->matcher->isModifier($token)) {
 				$nextToken = $token;
@@ -83,13 +83,13 @@ class Analyzer {
 			}
 
 			// continue last unit, or start new unit?
-			if ($detectedUnitType !== Unit::UNIT_METHODS 
-					&& $this->currentUnit !== null 
+			if ($detectedUnitType !== Unit::UNIT_METHODS
+					&& $this->currentUnit !== null
 					&& $detectedUnitType === $this->currentUnit->type) {
 				$prevToken = $token;
 				do {
-					$prevToken = $this->parser->getTracker()->prevToken($prevToken); 
-				} while (CommentsFormatter::isComment($prevToken) 
+					$prevToken = $this->parser->getTracker()->prevToken($prevToken);
+				} while (CommentsFormatter::isComment($prevToken)
 						|| $this->matcher->isModifier($prevToken));
 
 				// yes, new unit
@@ -113,7 +113,7 @@ class Analyzer {
 			}
 		}
 	}
-	
+
 	private function flushDetection(Token $token) {
 		$this->currentUnit = new Unit();
 		$this->currentUnit->start = $this->detectedUnit;
@@ -123,22 +123,22 @@ class Analyzer {
 		$this->detectedUnit = null;
 		$this->detectedUnitType = null;
 	}
-	
+
 	public function onRoutineClosed(BlockEvent $event) {
 		if ($this->parser->getContext()->getCurrentContext() == Context::CONTEXT_STRUCT) {
 
 			$block = $event->getBlock();
-			
+
 			if ($this->currentUnit === null || $block->start != $this->currentUnit->start) {
 				$this->detectedUnit = $block->start;
 				$this->detectedUnitType = Unit::UNIT_METHODS;
 				$this->flushDetection($event->getToken());
-			} 
-			
+			}
+
 			$this->dumpCurrentUnit();
 		}
 	}
-	
+
 	public function onBlockClosed(BlockEvent $event) {
 		$block = $event->getBlock();
 		if ($block->type == Block::TYPE_USE || $block->type == Block::TYPE_NAMESPACE) {
@@ -147,13 +147,13 @@ class Analyzer {
 			$this->flushDetection($event->getToken());
 		}
 	}
-	
+
 	private function finish(Token $token) {
 		if ($this->parser->getTracker()->isLastToken($token)) {
 			$this->dumpCurrentUnit();
 		}
 	}
-	
+
 	private function dumpCurrentUnit() {
 		if ($this->currentUnit !== null) {
 			$this->units->add($this->currentUnit);

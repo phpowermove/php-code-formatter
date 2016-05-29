@@ -12,12 +12,12 @@ class BlanksFormatter extends SpecializedFormatter {
 	protected function init() {
 		$this->units = $this->parser->getAnalyzer()->getUnits();
 	}
-	
+
 	protected function doVisitToken(Token $token) {
 		$this->unitStart($token);
 		$this->unitEnd($token);
 	}
-	
+
 	private function unitStart(Token $token) {
 		$unit = $this->units->findUnitByStart($token);
 
@@ -33,13 +33,13 @@ class BlanksFormatter extends SpecializedFormatter {
 			$this->currentUnit = null;
 		}
 	}
-	
+
 	private function blankBefore($key) {
 		for ($i = 0, $count = $this->config->getBlanks('before_' . $key); $i < $count; $i++) {
 			$this->defaultFormatter->addPreWriteln();
 		}
 	}
-	
+
 	private function blankAfter($key) {
 	for ($i = 0, $count = $this->config->getBlanks('after_' . $key); $i < $count; $i++) {
 			$this->defaultFormatter->addPostWriteln();

@@ -5,7 +5,7 @@ use Symfony\CS\Fixer\Contrib\HeaderCommentFixer;
 use Symfony\CS\FixerInterface;
 
 $finder = DefaultFinder::create()
-	->exclude(['fixture', 'generated'])
+	->exclude('fixtures')
     ->in(__DIR__ . '/src')
     ->in(__DIR__ . '/tests')
 ;

@@ -6,7 +6,7 @@ use phootwork\collection\ArrayList;
 use phootwork\tokenizer\Token;
 
 class UnitCollection extends ArrayList {
-	
+
 	/**
 	 * Retrieves a token at the given index
 	 * 
@@ -29,7 +29,7 @@ class UnitCollection extends ArrayList {
 				return $unit;
 			}
 		}
-		
+
 		return null;
 	}
 

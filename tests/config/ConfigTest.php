@@ -19,13 +19,13 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
 				'break' => 1,
 				'empty_lines' => false
 			],
-			
+
 			'braces' => [
 				'struct' => 'same',
 				'function' => 'same',
 				'blocks' => 'same'
 			],
-			
+
 			'whitespace' => [
 				'default' => [
 					'before_curly' => true,
@@ -42,14 +42,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
 					'before_doublecolon' => false,
 					'after_doublecolon' => false
 				],
-				
+
 				'field_access' => [
 					'before_arrow' => false,
 					'after_arrow' => false,
 					'before_doublecolon' => false,
 					'after_doublecolon' => false
 				],
-				
+
 				'function_invocation' => [
 					'before_open' => false,
 					'after_open' => false,
@@ -61,12 +61,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
 					'before_doublecolon' => false,
 					'after_doublecolon' => false
 				],
-				
+
 				'assignments' => [
 					'before_assignment' => true,
 					'after_assignment' => true
 				],
-				
+
 				'operators' => [
 					'before_binary' => true,
 					'after_binary' => true,
@@ -84,7 +84,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
 					'before_colon' => true,
 					'after_colon' => true
 				],
-				
+
 				'grouping' => [
 					'before_open' => false,
 					'after_open' => false,
@@ -92,14 +92,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
 					'after_close' => false
 				]
 			],
-			
+
 			'newlines' => [
 				'elseif_else' => false,
 				'catch' => false,
 				'finally' => false,
 				'do_while' => false
 			],
-			
+
 			'blanks' => [
 				'before_namespace' => 0,
 				'after_namespace' => 1,
@@ -115,27 +115,27 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
 				'end_file' => 1
 			]
 		];
-		
+
 		$config = new Config();
-		
+
 		$this->assertEquals($expected, $config->getConfig());
 	}
-	
+
 	public function testIndentation() {
 		$config = new Config();
-		
+
 		$this->assertEquals('tab', $config->getIndentation('character'));
 	}
-	
+
 	public function testBraces() {
 		$config = new Config();
-		
+
 		$this->assertEquals('same', $config->getBraces('struct'));
 	}
-	
+
 	public function testWhitespace() {
 		$config = new Config();
-		
+
 		$this->assertTrue($config->getWhitespace('before_curly'));
 		$this->assertFalse($config->getWhitespace('after_open'));
 		$this->assertTrue($config->getWhitespace('before_assignment', 'assignments'));

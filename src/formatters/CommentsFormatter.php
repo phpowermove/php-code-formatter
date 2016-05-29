@@ -4,7 +4,7 @@ namespace gossi\formatter\formatters;
 use phootwork\tokenizer\Token;
 
 class CommentsFormatter extends SpecializedFormatter {
-	
+
 	protected function doVisitToken(Token $token) {
 		// multiline
 		if ($token->type == T_DOC_COMMENT
@@ -18,7 +18,7 @@ class CommentsFormatter extends SpecializedFormatter {
 			foreach ($lines as $line) {
 				$this->writer->writeln(' ' . ltrim($line));
 			}
-			
+
 			$this->defaultFormatter->hideToken();
 		}
 	}
