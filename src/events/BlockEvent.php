@@ -14,9 +14,13 @@ class BlockEvent extends TokenEvent {
 		$this->block = $block;
 	}
 
+	public function getName() {
+		return 'context.block_' . ($this->block->end === null ? 'enter' : 'leave');
+	}
+
 	/**
 	 * Returns the associated block
-	 * 
+	 *
 	 * @return Block
 	 */
 	public function getBlock() {

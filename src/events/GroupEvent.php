@@ -14,9 +14,13 @@ class GroupEvent extends TokenEvent {
 		$this->group = $group;
 	}
 
+	public function getName() {
+		return 'context.group_' . ($this->group->end === null ? 'enter' : 'leave');
+	}
+
 	/**
 	 * Returns the associated group
-	 * 
+	 *
 	 * @return Group
 	 */
 	public function getGroup() {

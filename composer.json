@@ -1,4 +1,8 @@
 {
+	"name" : "gossi/php-code-formatter",
+	"type" : "library",
+	"description" : "a code formatter for php code",
+	"license" : "MIT",
 	"keywords" : [
 		"php",
 		"formatter",
@@ -14,20 +18,16 @@
 			"gossi\\formatter\\tests\\" : "tests"
 		}
 	},
-	"name" : "gossi/php-code-formatter",
-	"type" : "library",
-	"description" : "a code formatter for php code",
-	"license" : "MIT",
 	"require" : {
 		"php" : ">=5.4",
-		"symfony/config" : "~2",
-		"symfony/yaml" : "~2",
-		"symfony/event-dispatcher" : "~2",
+		"symfony/config" : "~2|~3",
+		"symfony/yaml" : "~2|~3",
+		"symfony/event-dispatcher" : "~2|~3",
+		"symfony/console" : "~2|~3",
 		"phootwork/collection" : "~1",
-		"phootwork/tokenizer" : "~0",
-		"symfony/console" : "~2"
+		"phootwork/tokenizer" : "~0"
 	},
 	"require-dev" : {
-		"phpunit/phpunit" : "~4"
+		"phpunit/phpunit" : "~4|~5"
 	}
 }
