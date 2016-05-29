@@ -1,8 +1,7 @@
 <?php
 namespace gossi\formatter\parser;
 
-use gossi\formatter\token\Tokenizer;
-use gossi\formatter\token\TokenCollection;
+use phootwork\tokenizer\PhpTokenizer;
 
 class Parser {
 	
@@ -23,7 +22,7 @@ class Parser {
 
 	public function __construct() {
 		$this->matcher = new TokenMatcher();
-		$this->tokenizer = new Tokenizer();
+		$this->tokenizer = new PhpTokenizer();
 		$this->lexer = new Lexer();
 		$this->context = new Context($this);
 		$this->analyzer = new Analyzer($this);
@@ -34,13 +33,13 @@ class Parser {
 		$tokens = $this->tokenizer->tokenize($code);
 		
 		// preparations
-		$tokens = $this->lexer->fix($tokens);
 		$tokens = $this->lexer->filterTokens($tokens);
-
+		$tokens = $this->lexer->repair($tokens);
+		
 		// helpers
 		$this->tracker = new TokenTracker($tokens, $this->context);
 		$this->tokens = $tokens;
-
+		
 		// analyze
 		$this->analyzer->analyze($tokens);
 		$this->context->reset();

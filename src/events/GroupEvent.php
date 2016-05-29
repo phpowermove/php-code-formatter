@@ -1,8 +1,8 @@
 <?php
 namespace gossi\formatter\events;
 
-use gossi\formatter\token\Token;
 use gossi\formatter\entities\Group;
+use phootwork\tokenizer\Token;
 
 class GroupEvent extends TokenEvent {
 	

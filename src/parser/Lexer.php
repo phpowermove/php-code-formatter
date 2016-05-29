@@ -1,8 +1,8 @@
 <?php
 namespace gossi\formatter\parser;
 
-use gossi\formatter\token\TokenCollection;
-use gossi\formatter\token\Token;
+use phootwork\tokenizer\TokenCollection;
+use phootwork\tokenizer\Token;
 
 /**
  * Dunno if this is a lexer...
@@ -12,7 +12,7 @@ class Lexer {
 
 	private $tokens;
 	
-	public function fix(TokenCollection $tokens) {
+	public function repair(TokenCollection $tokens) {
 		$fixedTokens = new TokenCollection();
 		
 		for ($i = 0, $n = $tokens->size(); $i < $n; $i++) {
@@ -20,9 +20,10 @@ class Lexer {
 		
 			// fix ELSEIF
 			if ($token->type == T_ELSE) {
-				list($j, $nextToken) = $tokens->nextToken($i);
+				$nextToken = $tokens->get($i + 1);
+				
 				if ($nextToken->type == T_IF) {
-					$i = $j;
+					$i++;
 					$fixedTokens->add(new Token([T_ELSEIF, 'else if']));
 				} else {
 					$fixedTokens->add($token);
@@ -42,16 +43,8 @@ class Lexer {
 	 * @return TokenCollection
 	 */
 	public function filterTokens(TokenCollection $tokens) {
-		$filteredTokens = new TokenCollection();
-	
-		for ($i = 0, $n = $tokens->size(); $i < $n; $i++) {
-			$token = $tokens->get($i);
-
-			// filter whitespace
-			if ($token->type !== T_WHITESPACE) {
-				$filteredTokens->add($token);
-			}
-		}
-		return $filteredTokens;
+		return $tokens->filter(function (Token $token) {
+			return $token->type != T_WHITESPACE;
+		});
 	}
 }

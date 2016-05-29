@@ -1,7 +1,7 @@
 <?php
 namespace gossi\formatter\entities;
 
-use gossi\formatter\token\Token;
+use phootwork\tokenizer\Token;
 
 class Block {
 

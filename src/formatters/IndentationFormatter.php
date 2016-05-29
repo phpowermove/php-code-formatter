@@ -1,7 +1,7 @@
 <?php
 namespace gossi\formatter\formatters;
 
-use gossi\formatter\token\Token;
+use phootwork\tokenizer\Token;
 
 class IndentationFormatter extends SpecializedFormatter {
 	

@@ -1,9 +1,8 @@
 <?php
 namespace gossi\formatter\formatters;
 
-use gossi\formatter\token\Token;
-use gossi\formatter\token\Tokenizer;
 use gossi\formatter\entities\Group;
+use phootwork\tokenizer\Token;
 
 class WhitespaceFormatter extends SpecializedFormatter {
 	

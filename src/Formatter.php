@@ -1,7 +1,6 @@
 <?php
 namespace gossi\formatter;
 
-use gossi\formatter\token\Tokenizer;
 use gossi\formatter\config\Config;
 use gossi\formatter\formatters\DelegateFormatter;
 use gossi\formatter\parser\Parser;
@@ -21,7 +20,7 @@ class Formatter {
 		// formatting
 		$delegate = new DelegateFormatter($parser, $this->config);
 		$delegate->format();
-		
+
 		// post processing
 		
 		return $delegate->getCode();

@@ -1,8 +1,6 @@
 <?php
 namespace gossi\formatter\entities;
 
-use gossi\formatter\token\Token;
-
 class Group {
 
 	const BLOCK = 'block';

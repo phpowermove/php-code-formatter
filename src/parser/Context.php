@@ -1,19 +1,14 @@
 <?php
 namespace gossi\formatter\parser;
 
-use gossi\formatter\token\Token;
-use gossi\collection\Stack;
-use gossi\formatter\token\Tokenizer;
-use gossi\formatter\token\TokenVisitorInterface;
 use gossi\formatter\entities\Block;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use gossi\formatter\events\TokenEvent;
 use gossi\formatter\entities\Group;
 use gossi\formatter\events\BlockEvent;
 use gossi\formatter\events\GroupEvent;
-use gossi\collection\ArrayList;
-use gossi\collection\Set;
-use gossi\collection\Map;
+use phootwork\collection\Stack;
+use phootwork\tokenizer\Token;
+use phootwork\tokenizer\TokenVisitorInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Context implements TokenVisitorInterface {
 	

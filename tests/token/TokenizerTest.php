@@ -3,8 +3,6 @@
 namespace gossi\formatter\tests\token;
 
 use gossi\formatter\Formatter;
-use gossi\formatter\token\Token;
-use gossi\formatter\token\Tokenizer;
 use gossi\formatter\tests\utils\SamplesTrait;
 use gossi\formatter\parser\Parser;
 

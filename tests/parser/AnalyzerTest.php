@@ -1,13 +1,10 @@
 <?php
 namespace gossi\formatter\tests\parser;
 
-use gossi\formatter\token\Tokenizer;
-use gossi\formatter\parser\Lexer;
-use gossi\formatter\parser\Analyzer;
-use gossi\formatter\tests\utils\SamplesTrait;
 use gossi\formatter\collections\UnitCollection;
 use gossi\formatter\entities\Unit;
 use gossi\formatter\parser\Parser;
+use gossi\formatter\tests\utils\SamplesTrait;
 
 class AnalyzerTest extends \PHPUnit_Framework_TestCase {
 

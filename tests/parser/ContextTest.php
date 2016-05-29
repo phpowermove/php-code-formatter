@@ -1,17 +1,14 @@
 <?php
 namespace gossi\formatter\tests\parser;
 
-use gossi\formatter\Formatter;
-use gossi\formatter\tests\utils\SamplesTrait;
-use gossi\formatter\token\Token;
-use gossi\formatter\token\Tokenizer;
-use gossi\collection\ArrayList;
-use gossi\formatter\events\TokenEvent;
+use gossi\formatter\entities\Block;
 use gossi\formatter\events\BlockEvent;
 use gossi\formatter\events\GroupEvent;
-use gossi\formatter\parser\Parser;
+use gossi\formatter\Formatter;
 use gossi\formatter\parser\Context;
-use gossi\formatter\entities\Block;
+use gossi\formatter\parser\Parser;
+use gossi\formatter\tests\utils\SamplesTrait;
+use phootwork\collection\ArrayList;
 
 class ContextTest extends \PHPUnit_Framework_TestCase {
 

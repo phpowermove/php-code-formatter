@@ -1,8 +1,8 @@
 <?php
 namespace gossi\formatter\events;
 
-use gossi\formatter\token\Token;
 use gossi\formatter\entities\Block;
+use phootwork\tokenizer\Token;
 
 class BlockEvent extends TokenEvent {
 	

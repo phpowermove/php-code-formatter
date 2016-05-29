@@ -1,7 +1,6 @@
 <?php
 namespace gossi\formatter\formatters;
 
-use gossi\formatter\token\TokenCollection;
 use gossi\formatter\config\Config;
 use gossi\formatter\utils\Writer;
 use gossi\formatter\parser\Parser;

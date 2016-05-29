@@ -2,7 +2,8 @@
 namespace gossi\formatter\events;
 
 use Symfony\Component\EventDispatcher\Event;
-use gossi\formatter\token\Token;
+use phootwork\tokenizer\Token;
+
 
 class TokenEvent extends Event {
 

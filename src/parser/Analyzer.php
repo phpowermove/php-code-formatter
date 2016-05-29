@@ -1,13 +1,13 @@
 <?php
 namespace gossi\formatter\parser;
 
-use gossi\formatter\token\Token;
-use gossi\formatter\token\TokenCollection;
 use gossi\formatter\formatters\CommentsFormatter;
 use gossi\formatter\entities\Unit;
 use gossi\formatter\collections\UnitCollection;
 use gossi\formatter\events\BlockEvent;
 use gossi\formatter\entities\Block;
+use phootwork\tokenizer\TokenCollection;
+use phootwork\tokenizer\Token;
 
 class Analyzer {
 	

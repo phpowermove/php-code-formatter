@@ -1,14 +1,13 @@
 <?php
 namespace gossi\formatter\formatters;
 
-use gossi\formatter\token\TokenCollection;
 use gossi\formatter\config\Config;
 use gossi\formatter\utils\Writer;
-use gossi\formatter\token\Token;
-use gossi\formatter\token\TokenVisitorInterface;
 use gossi\formatter\parser\Parser;
 use gossi\formatter\parser\Context;
 use gossi\formatter\parser\TokenMatcher;
+use phootwork\tokenizer\TokenVisitorInterface;
+use phootwork\tokenizer\Token;
 
 class BaseFormatter implements TokenVisitorInterface {
 	

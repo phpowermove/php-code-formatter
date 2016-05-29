@@ -1,5 +1,5 @@
 <?php
-namespace gossi\formatter\tests\parser;
+namespace gossi\formatter\tests\formatter;
 
 use gossi\formatter\Formatter;
 use gossi\formatter\tests\utils\SamplesTrait;

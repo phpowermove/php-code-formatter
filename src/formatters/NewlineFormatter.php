@@ -1,8 +1,6 @@
 <?php
 namespace gossi\formatter\formatters;
 
-use gossi\formatter\token\Token;
-use gossi\formatter\token\Tokenizer;
 use gossi\formatter\entities\Block;
 use gossi\formatter\parser\Context;
 use gossi\formatter\events\BlockEvent;

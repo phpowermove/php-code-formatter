@@ -1,9 +1,9 @@
 <?php
 namespace gossi\formatter\collections;
 
-use gossi\collection\ArrayList;
 use gossi\formatter\entities\Unit;
-use gossi\formatter\token\Token;
+use phootwork\collection\ArrayList;
+use phootwork\tokenizer\Token;
 
 class UnitCollection extends ArrayList {
 	

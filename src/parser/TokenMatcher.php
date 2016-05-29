@@ -1,8 +1,8 @@
 <?php
 namespace gossi\formatter\parser;
 
-use gossi\collection\Set;
-use gossi\formatter\token\Token;
+use phootwork\collection\Set;
+use phootwork\tokenizer\Token;
 
 class TokenMatcher {
 	

@@ -1,9 +1,9 @@
 <?php
 namespace gossi\formatter\parser;
 
-use gossi\formatter\token\TokenCollection;
-use gossi\formatter\token\Token;
-use gossi\formatter\token\TokenVisitorInterface;
+use phootwork\tokenizer\TokenVisitorInterface;
+use phootwork\tokenizer\TokenCollection;
+use phootwork\tokenizer\Token;
 
 class TokenTracker implements TokenVisitorInterface {
 	
@@ -34,29 +34,27 @@ class TokenTracker implements TokenVisitorInterface {
 	}
 
 	public function nextToken(Token $token, $offset = 1) {
-		$i = 1;
-		$index = $this->tokens->indexOf($token) - 1;
-		do {
-			list($index, $t) = $this->tokens->nextToken($index);
-		} while ($i++ <= $offset);
+		$index = $this->tokens->indexOf($token);
+		$index += $offset;
+		$token = $this->tokens->get($index);
 		
-		if (empty($t)) {
-			$t = new Token();
+		if ($token === null) {
+			$token = new Token();
 		}
-		return $t;
+		
+		return $token;
 	}
 	
 	public function prevToken($token, $offset = 1) {
-		$i = 1;
-		$index = $this->tokens->indexOf($token) + 1;
-		do {
-			list($index, $t) = $this->tokens->prevToken($index);
-		} while ($i++ <= $offset);
+		$index = $this->tokens->indexOf($token);
+		$index -= $offset;
+		$token = $this->tokens->get($index);
 		
-		if (empty($t)) {
-			$t = new Token();
+		if ($token === null) {
+			$token = new Token();
 		}
-		return $t;
+		
+		return $token; 
 	}
 
 	public function isLastToken(Token $token) {

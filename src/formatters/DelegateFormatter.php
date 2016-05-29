@@ -1,14 +1,12 @@
 <?php
 namespace gossi\formatter\formatters;
 
-use gossi\formatter\token\TokenCollection;
 use gossi\formatter\config\Config;
-use gossi\formatter\utils\Writer;
-use gossi\formatter\token\Token;
-use gossi\formatter\token\TokenVisitorInterface;
-use gossi\formatter\parser\Analyzer;
-use gossi\formatter\parser\Parser;
 use gossi\formatter\parser\Context;
+use gossi\formatter\parser\Parser;
+use gossi\formatter\utils\Writer;
+use phootwork\tokenizer\Token;
+use phootwork\tokenizer\TokenVisitorInterface;
 
 class DelegateFormatter implements TokenVisitorInterface {
 
