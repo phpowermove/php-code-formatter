@@ -31,7 +31,7 @@
 		"symfony/config" : "^3",
 		"symfony/yaml" : "^3",
 		"symfony/event-dispatcher" : "^3",
-		"symfony/console" : "^3",
+		"symfony/console" : "~2|^3",
 		"phootwork/collection" : "^1.5",
 		"phootwork/tokenizer" : "~0"
 	},
