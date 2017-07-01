@@ -2,10 +2,11 @@
 namespace gossi\formatter\parser;
 
 use phootwork\tokenizer\PhpTokenizer;
+use phootwork\tokenizer\TokenCollection;
 
 class Parser {
 
-	/** @var Tokenizer */
+	/** @var PhpTokenizer */
 	private $tokenizer;
 	/** @var Lexer */
 	private $lexer;

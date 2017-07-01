@@ -2,7 +2,6 @@
 namespace gossi\formatter\formatters;
 
 use gossi\formatter\entities\Group;
-use gossi\formatter\utils\Writer;
 use phootwork\collection\Queue;
 use phootwork\tokenizer\Token;
 

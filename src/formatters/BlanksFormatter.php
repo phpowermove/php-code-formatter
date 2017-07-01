@@ -1,7 +1,6 @@
 <?php
 namespace gossi\formatter\formatters;
 
-use gossi\formatter\config\Config;
 use phootwork\tokenizer\Token;
 
 class BlanksFormatter extends SpecializedFormatter {

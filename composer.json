@@ -1,13 +1,21 @@
 {
 	"name" : "gossi/php-code-formatter",
 	"type" : "library",
-	"description" : "a code formatter for php code",
+	"description" : "A code formatter for php code",
 	"license" : "MIT",
+	"authors" : [{
+			"name" : "Thomas Gossmann",
+			"homepage" : "http://gos.si"
+		}
+	],
 	"keywords" : [
 		"php",
 		"formatter",
 		"beautifier"
 	],
+	"support" : {
+		"issues" : "https://github.com/gossi/php-code-formatter/issues"
+	},
 	"autoload" : {
 		"psr-4" : {
 			"gossi\\formatter\\" : "src"
@@ -19,15 +27,20 @@
 		}
 	},
 	"require" : {
-		"php" : ">=5.4",
-		"symfony/config" : "~2|~3",
-		"symfony/yaml" : "~2|~3",
-		"symfony/event-dispatcher" : "~2|~3",
-		"symfony/console" : "~2|~3",
-		"phootwork/collection" : "~1",
+		"php" : ">=5.6",
+		"symfony/config" : "^3",
+		"symfony/yaml" : "^3",
+		"symfony/event-dispatcher" : "^3",
+		"symfony/console" : "^3",
+		"phootwork/collection" : "^1.5",
 		"phootwork/tokenizer" : "~0"
 	},
 	"require-dev" : {
-		"phpunit/phpunit" : "~4|~5"
+		"phpunit/phpunit" : "^5.7",
+		"sami/sami" : "^4|^3"
+	},
+	"scripts" : {
+		"test" : "phpunit",
+		"api" : "sami.php update sami.php"
 	}
 }

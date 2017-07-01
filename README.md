@@ -1,8 +1,11 @@
 # PHP Code Formatter
 
-[![Build Status](https://travis-ci.org/gossi/php-code-formatter.svg?branch=master)](https://travis-ci.org/gossi/php-code-formatter)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gossi/php-code-formatter/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/gossi/php-code-formatter/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/gossi/php-code-formatter/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/gossi/php-code-formatter/?branch=master)
+[![License](https://img.shields.io/github/license/gossi/php-code-formatter.svg?style=flat-square)](https://packagist.org/packages/gossi/php-code-formatter)
+[![Latest Stable Version](https://img.shields.io/packagist/v/gossi/php-code-formatter.svg?style=flat-square)](https://packagist.org/packages/gossi/php-code-formatter)
+[![Total Downloads](https://img.shields.io/packagist/dt/gossi/php-code-formatter.svg?style=flat-square&colorB=007ec6)](https://packagist.org/packages/gossi/php-code-formatter)<br>
+[![Build Status](https://img.shields.io/scrutinizer/build/g/gossi/php-code-formatter.svg?style=flat-square)](https://travis-ci.org/gossi/php-code-formatter)
+[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/gossi/php-code-formatter.svg?style=flat-square)](https://scrutinizer-ci.com/g/gossi/php-code-formatter)
+[![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/gossi/php-code-formatter.svg?style=flat-square)](https://scrutinizer-ci.com/g/gossi/php-code-formatter)
 
 A library for formatting php code.
 
@@ -22,12 +25,8 @@ A library for formatting php code.
 
 Via composer:
 
-```json
-{
-    "require": {
-        "gossi/php-code-formatter": "dev-master"
-    }
-}
+```
+composer require gossi/php-code-formatter
 ```
 
 ### From Code
@@ -43,7 +42,14 @@ $beautifulCode = $formatter->format($uglyCode);
 
 ### From CLI
 
-Not yet, see [#2](https://github.com/gossi/php-code-formatter/issues/2)
+A bare cli version is available:
+
+```
+vendor/bin/phormat path/to/file.php
+```
+
+will output the formatted source code to stdout
+
 
 ## Development
 

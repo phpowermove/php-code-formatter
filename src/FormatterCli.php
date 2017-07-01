@@ -1,10 +1,9 @@
 <?php
 namespace gossi\formatter;
 
-use gossi\formatter\commands\FormatterCommand;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use gossi\formatter\commands\FormatterCommand;
 
 class FormatterCli extends Application {
 
