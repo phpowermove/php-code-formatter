@@ -11,7 +11,7 @@ class Formatter {
 	private $profile;
 
 	public function __construct($profile = null) {
-		if (is_string($profile)) {
+		if (is_string($profile) || $profile === null) {
 			$profile = new Profile($profile);
 		}
 		if (!($profile instanceof Profile)) {
