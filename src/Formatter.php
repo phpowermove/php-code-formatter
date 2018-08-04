@@ -1,16 +1,17 @@
 <?php
 namespace gossi\formatter;
 
-use gossi\formatter\config\Config;
+use gossi\code\profiles\Profile;
 use gossi\formatter\formatters\DelegateFormatter;
 use gossi\formatter\parser\Parser;
 
 class Formatter {
 
-	private $config;
+	/** @var Profile */
+	private $profile;
 
 	public function __construct($profile = null) {
-		$this->config = new Config($profile);
+		$this->profile = new Profile($profile);
 	}
 
 	public function format($code) {
@@ -18,7 +19,7 @@ class Formatter {
 		$parser->parse($code);
 
 		// formatting
-		$delegate = new DelegateFormatter($parser, $this->config);
+		$delegate = new DelegateFormatter($parser, $this->profile);
 		$delegate->format();
 
 		// post processing

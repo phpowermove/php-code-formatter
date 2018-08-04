@@ -1,7 +1,7 @@
 <?php
 namespace gossi\formatter\formatters;
 
-use gossi\formatter\config\Config;
+use gossi\code\profiles\Profile;
 use gossi\formatter\parser\Context;
 use gossi\formatter\parser\Parser;
 use gossi\formatter\parser\TokenMatcher;
@@ -9,11 +9,12 @@ use gossi\formatter\utils\Writer;
 use phootwork\tokenizer\Token;
 use phootwork\tokenizer\TokenVisitorInterface;
 
+
 class BaseFormatter implements TokenVisitorInterface {
 
 	/** @var Parser */
 	protected $parser;
-	/** @var Config */
+	/** @var Profile */
 	protected $config;
 	/** @var Writer */
 	protected $writer;
@@ -25,8 +26,8 @@ class BaseFormatter implements TokenVisitorInterface {
 	protected $nextToken;
 	protected $prevToken;
 
-	public function __construct(Parser $parser, Config $config, Writer $writer) {
-		$this->config = $config;
+	public function __construct(Parser $parser, Profile $profile, Writer $writer) {
+		$this->config = $profile;
 		$this->writer = $writer;
 		$this->parser = $parser;
 		$this->context = $parser->getContext();
