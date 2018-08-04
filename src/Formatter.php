@@ -11,7 +11,13 @@ class Formatter {
 	private $profile;
 
 	public function __construct($profile = null) {
-		$this->profile = new Profile($profile);
+		if (is_string($profile)) {
+			$profile = new Profile($profile);
+		}
+		if (!($profile instanceof Profile)) {
+			throw new \InvalidArgumentException('$profile must be a string or instanceof gossi\code\profiles\Profile');
+		}
+		$this->profile = $profile;
 	}
 
 	public function format($code) {
