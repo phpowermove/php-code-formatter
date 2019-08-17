@@ -9,7 +9,6 @@ use gossi\formatter\utils\Writer;
 use phootwork\tokenizer\Token;
 use phootwork\tokenizer\TokenVisitorInterface;
 
-
 class BaseFormatter implements TokenVisitorInterface {
 
 	/** @var Parser */

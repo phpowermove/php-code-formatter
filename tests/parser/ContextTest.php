@@ -111,7 +111,7 @@ class ContextTest extends \PHPUnit_Framework_TestCase {
 				// if
 				'context.group_enter block',
 				'context.group_leave block',
-				// for 
+				// for
 				'context.group_enter block',
 				'context.group_leave block',
 				// call

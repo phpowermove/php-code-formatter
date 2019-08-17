@@ -4,3 +4,4 @@ vendor/
 coverage/
 cache/
 api/
+.php_cs.cache

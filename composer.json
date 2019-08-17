@@ -38,9 +38,13 @@
 	},
 	"require-dev" : {
 		"phpunit/phpunit" : "^5.7",
-		"sami/sami" : "^4|^3"
+		"sami/sami" : "^4|^3",
+		"phootwork/php-cs-fixer-config" : "~0.1"
 	},
 	"scripts" : {
+		"check" : "@cs",
+		"cs" : "php-cs-fixer fix -v --diff --dry-run",
+		"cs-fix" : "php-cs-fixer fix -v --diff",
 		"test" : "phpunit",
 		"api" : "sami.php update sami.php"
 	}
