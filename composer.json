@@ -28,7 +28,7 @@
 	},
 	"require" : {
 		"php" : ">=5.6",
-		"gossi/php-code-profiles" : "dev-master",
+		"gossi/php-code-profiles" : "dev-master#a5ed519",
 		"symfony/config" : "~2|^3|^4",
 		"symfony/yaml" : "~2|^3|^4",
 		"symfony/event-dispatcher" : "~2|^3|^4",
